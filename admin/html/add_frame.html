@@ -274,7 +274,7 @@
 	// }
 
 	function uploaderimgs(_data,number){
-		alert(1)
+		alert(_data.url)
 		if (number==0) {
 			api.ajax({
 				url: 'https://d.apicloud.com/mcm/api/video1',
@@ -291,8 +291,9 @@
 					},
 				},function(ret, err){
 					if (ret) {
-						wareInfoId=ret.id;
-						addInfo.wareInfo=ret.id;
+						// wareInfoId=ret.id;
+						// addInfo.wareInfo=ret.id;
+						alert($api.jsonToStr(ret));
 						api.toast({
 							msg: '上传成功',
 							duration: 2000,
