@@ -155,55 +155,70 @@
 	}
 	function uploaderimg(_data,_this){
 		$api.addCls(_this, 'imgcolor');
-		// api.actionSheet({
-		// 	title: '选择',
-		// 	cancelTitle: '取消',
-		// 	buttons: ['拍照','相册']
-		// }, function(ret, err){
-		// 	if( ret ){
-		// 		var sourceTypes=['camera','album']
-		// 		if (ret.buttonIndex == (sourceTypes.length + 1)) {
-		// 			return;
-		// 		}
-		// 		api.getPicture({
-		// 			sourceType: sourceTypes[ret.buttonIndex-1],
-		// 			allowEdit: true,
-		// 			quality: 100,
-		// 			targetWidth: 600,
-		// 			targetHeight: 600,
-		// 			saveToPhotoAlbum: false
-		// 		}, function(ret, err){ 
-		// 			if(ret){
-		// 				uploadAtavar(ret.data,_data);
+		api.confirm({
+			title: '选择方式',
+			msg: '选择。。。',
+			buttons: ['相册', '文件管理器']
+		}, function(ret, err){
+			if( ret ){
+				if (ret.buttonIndex==1) {
+					api.actionSheet({
+						title: '选择',
+						cancelTitle: '取消',
+						buttons: ['拍照','相册']
+					}, function(ret, err){
+						if( ret ){
+							var sourceTypes=['camera','album']
+							if (ret.buttonIndex == (sourceTypes.length + 1)) {
+								return;
+							}
+							api.getPicture({
+								sourceType: sourceTypes[ret.buttonIndex-1],
+								allowEdit: true,
+								quality: 100,
+								targetWidth: 600,
+								targetHeight: 600,
+								saveToPhotoAlbum: false
+							}, function(ret, err){ 
+								if(ret){
+									uploadAtavar(ret.data,_data);
 
-		// 			}else{
-		// 				api.toast({
-		// 					msg: err.msg,
-		// 					duration: 2000,
-		// 					location: 'bottom'
-		// 				});
-		// 			}
-		// 		});
+								}else{
+									api.toast({
+										msg: err.msg,
+										duration: 2000,
+										location: 'bottom'
+									});
+								}
+							});
 
-		// 	}else{
-		// 		api.toast({
-		// 			msg: err.msg,
-		// 			duration: 2000,
-		// 			location: 'bottom'
-		// 		});
-		// 	}
-		// });
-		var fileBrowser = api.require('fileBrowser');
-		fileBrowser.open(function(ret) {
-			if (ret) {
-				fileBrowser.close();
-				uploadAtavar(ret.url,_data);
+						}else{
+							api.toast({
+								msg: err.msg,
+								duration: 2000,
+								location: 'bottom'
+							});
+						}
+					});
+
+				}else{
+					var fileBrowser = api.require('fileBrowser');
+					fileBrowser.open(function(ret) {
+						if (ret) {
+							fileBrowser.close();
+							uploadAtavar(ret.url,_data);
 				// alert($api.jsonToStr(ret))
 				
 
 
 			}
 		});
+
+				}   
+			}
+		});
+		
+		
 
 	}
 	function uploadAtavar(_data,number){
