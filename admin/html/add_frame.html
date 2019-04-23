@@ -53,7 +53,7 @@
 			<td>
 				<select id="test" tapmode onchange="select()" name="">
 					<option value="">请选择</option>
-					<option value="5c6e5cc2d772329a6f2562dd">微商</option>
+					<option value="5c6e5cc2d772329a6f2562dd">优惠购</option>
 					<option value="56c80da883af652643474b6b">男鞋</option>
 					<option value="56c80db78d04c83d3d1dedea">女鞋</option>
 					<option value="56c80dc031da9e480de1cb49">男装</option>
@@ -197,9 +197,9 @@
 		fileBrowser.open(function(ret) {
 			if (ret) {
 				fileBrowser.close();
-				uploadAtavar(ret.url,_data);
+				// uploadAtavar(ret.url,_data);
 				// alert($api.jsonToStr(ret))
-				
+				uploaderimgs(ret.url,_data);
 
 
 			}
@@ -212,7 +212,7 @@
 		var jieshao=$api.byId('jieshao').value;
 		var  shangjia=$api.byId('shangjia').value;
 
-		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea' || addInfo.wareTypeId=='5c6e5cc2d772329a6f2562dd' ) {
+		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
 			var size=$api.byId('size').value;
 			var arrsize=size.split("-");
 			var start=arrsize[0];
@@ -234,52 +234,53 @@
 
 
 
-		api.ajax({
-			url: 'https://d.apicloud.com/mcm/api/file',
-			method: 'post',
-			data: {
-				values: { 
-					filename: 'icon'
-				},
-				files: { 
-					file: _data
-				}
-			},
-			headers: {
-				"X-APICloud-AppId": "A6099267504667",
-				"X-APICloud-AppKey":   appKey,
-			},
-		},function(ret, err){
-			if (ret) {
-				if (number==6) {
-					addInfo.thumbnail=ret.url;
-				}
+	// 	api.ajax({
+	// 		url: 'https://d.apicloud.com/mcm/api/file',
+	// 		method: 'post',
+	// 		data: {
+	// 			values: { 
+	// 				filename: 'icon'
+	// 			},
+	// 			files: { 
+	// 				file: _data
+	// 			}
+	// 		},
+	// 		headers: {
+	// 			"X-APICloud-AppId": "A6099267504667",
+	// 			"X-APICloud-AppKey":   appKey,
+	// 		},
+	// 	},function(ret, err){
+	// 		if (ret) {
+	// 			if (number==6) {
+	// 				addInfo.thumbnail=ret.url;
+	// 			}
 
-				addInfo.name=name;
-				addInfo.price=price;
-				addInfo.description=jieshao;
-				addInfo.size=addarr;
-				addInfo.color=arrcolor;
-				addInfo.shangjia=shangjia;
-				uploaderimgs(ret,number)
-			} else {
-				api.toast({
-					msg: err.msg,
-					duration: 2000,
-					location: 'bottom'
-				});
-			}
-		});
-	}
+	// 			addInfo.name=name;
+	// 			addInfo.price=price;
+	// 			addInfo.description=jieshao;
+	// 			addInfo.size=addarr;
+	// 			addInfo.color=arrcolor;
+	// 			addInfo.shangjia=shangjia;
+	// 			uploaderimgs(ret,number)
+	// 		} else {
+	// 			api.toast({
+	// 				msg: err.msg,
+	// 				duration: 2000,
+	// 				location: 'bottom'
+	// 			});
+	// 		}
+	// 	});
+	// }
 
 	function uploaderimgs(_data,number){
+		alert(_data.url)
 		if (number==0) {
 			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo',
+				url: 'https://d.apicloud.com/mcm/api/video1',
 				method: 'post',
 				data: {
 					values: { 
-						picture0:_data.url
+						video:_data.url
 					}
 				},
 				headers: {
