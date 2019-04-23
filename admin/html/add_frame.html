@@ -199,37 +199,38 @@
 				fileBrowser.close();
 				// uploadAtavar(ret.url,_data);
 				// alert($api.jsonToStr(ret))
-				uploaderimgs(ret.url,_data);
+				uploaderimgs(ret.url,_data)
+				
 
 
 			}
 		});
 
 	}
-	function uploadAtavar(_data,number){
-		var name=$api.byId('name').value;
-		var price=$api.byId('price').value;
-		var jieshao=$api.byId('jieshao').value;
-		var  shangjia=$api.byId('shangjia').value;
+	// function uploadAtavar(_data,number){
+	// 	var name=$api.byId('name').value;
+	// 	var price=$api.byId('price').value;
+	// 	var jieshao=$api.byId('jieshao').value;
+	// 	var  shangjia=$api.byId('shangjia').value;
 
-		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
-			var size=$api.byId('size').value;
-			var arrsize=size.split("-");
-			var start=arrsize[0];
-			var end=arrsize[1];
-			var addarr=[];
-			for (var i = start; i <=end; i++) {
-				addarr.push(i);
-			};
+	// 	if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
+	// 		var size=$api.byId('size').value;
+	// 		var arrsize=size.split("-");
+	// 		var start=arrsize[0];
+	// 		var end=arrsize[1];
+	// 		var addarr=[];
+	// 		for (var i = start; i <=end; i++) {
+	// 			addarr.push(i);
+	// 		};
 
-		}else {
-			var size=$api.byId('size').value;
-			var addarr=size.split("-");
+	// 	}else {
+	// 		var size=$api.byId('size').value;
+	// 		var addarr=size.split("-");
 
-		}
+	// 	}
 
-		var color=$api.byId('color').value;
-		var arrcolor=color.split("-");
+	// 	var color=$api.byId('color').value;
+	// 	var arrcolor=color.split("-");
 
 
 
@@ -273,14 +274,14 @@
 	// }
 
 	function uploaderimgs(_data,number){
-		alert(_data.url)
+		alert(1)
 		if (number==0) {
 			api.ajax({
 				url: 'https://d.apicloud.com/mcm/api/video1',
 				method: 'post',
 				data: {
 					values: { 
-						video:_data.url
+						title:_data.url
 					}
 				},
 				headers: {
