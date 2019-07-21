@@ -48,12 +48,12 @@
 </head>
 <body>
 	<table class="gridtable" id="list">
-
+	<tr><th>序号</th><th>商品名称</th><th>介绍</th><th>价格</th><th>颜色</th><th>码子</th><th>商家</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>单号</th><th>商品图</th><th>是否支付</th><th>删除</th></tr>
 	</table>
 
 </body>
 <script type="text/template" id="template">
-	<tr><th>序号</th><th>商品名称</th><th>介绍</th><th>价格</th><th>颜色</th><th>码子</th><th>商家</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>单号</th><th>商品图</th><th>是否支付</th><th>删除</th></tr>
+
 	{{~it:value:index}}
 	{{? value.dindantypeid=='5c2a39add37a824c5ac6cc64'}}
 	<tr class="red">
@@ -131,11 +131,20 @@
 	var activity;
 	var now = Date.now();
 	var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+	var skip=0;
+	var LIMIT=18;
 	apiready = function(){
 		
 		getAddressList();
+		initEventListenter();
 	};
-	function getAddressList(){
+	function getAddressList(_LoadMore){
+		if (_LoadMore) {
+			skip+=LIMIT;
+		}else{
+
+			skip=0;
+		}
 		activity = api.require('UILoading');
 		activity.keyFrame({
 			rect: {
@@ -160,7 +169,9 @@
       	fields: {},
       	where: {
       	},
-      	skip:0
+      	skip:skip,
+      	limit:LIMIT,
+      	order:"createdAt DESC"
       }
       params=$api.jsonToStr(params);
       api.ajax({
@@ -174,7 +185,8 @@
       },function(ret, err){
       	if (ret) {
          // 模板渲染
-         updateWareList(ret);
+         updateWareList(ret,_LoadMore);
+         // alert($api.jsonToStr(ret))
 
      } else {
      	api.toast({
@@ -185,13 +197,15 @@
      }
  });
   }
-  function updateWareList(_data){
-  	_data.reverse();
+  function updateWareList(_data,_LoadMore){
   	var list=$api.byId('list');
   	var tempFn=doT.template($api.byId('template').innerHTML);
   	var resultText=tempFn(_data)
-  	$api.html(list, resultText);
-    // 优化
+  if (_LoadMore) {
+    $api.append(list, resultText);
+}else{
+    $api.append(list, resultText);
+}
     api.parseTapmode();
     activity.closeKeyFrame()
 }
@@ -273,6 +287,18 @@ function adddanhao(_id){
 	});
 	
 
+}
+
+// 监听 
+function initEventListenter(){
+	api.addEventListener({
+		name:'scrolltobottom',
+		extra:{
+			threshold:100
+		}
+	}, function(ret, err){        
+		getAddressList(true);
+	});
 }
 
 function saomiao(_id){

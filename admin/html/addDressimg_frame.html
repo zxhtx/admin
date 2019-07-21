@@ -49,114 +49,40 @@
 <body>
 	<table class="gridtable" id="list">
 		<tr>
-			<th>商品所属类</th>
-			<td>
-				<select id="test" tapmode onchange="select()" name="">
-					<option value="">请选择</option>
-					<option value="5c6e5cc2d772329a6f2562dd">优惠购</option>
-					<option value="56c80da883af652643474b6b">男鞋</option>
-					<option value="56c80db78d04c83d3d1dedea">女鞋</option>
-					<option value="56c80dc031da9e480de1cb49">男装</option>
-					<option value="56c80dc383af652643474b6d">女装</option>
-					<option value="5cdbbff7bb71b97347c883c1">12元购</option>
-					<option value="5ced332a9ae79abc715ce643">高品质</option>
-					<option value="5d0b369cb2d5c22418ad7a49">配件</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<th>商品名</th>
-			<td><input type="text" id="name"></td>
-		</tr>
-		<tr>
-			<th>介绍</th>
-			<td><input type="text" id="jieshao"></td>
-			
-		</tr>
-		<tr>
-			<th>单价</th>
-			<td><input type="text" id="price"></td>
-			
-
-		</tr>
-		<tr>
-			<th>码数</th>
-			<td><input type="text" id="size"></td>
-			
-		</tr>
-
-		<tr>
-			<th>颜色</th>
-			<td><input type="text" id="color"></td>
-			
-
-		</tr>
-		<tr>
-			<th>商家</th>
-			<td><input type="text" id="shangjia"></td>
-			
-
-		</tr>
-		<tr>
 			<th>封面</th>
-			<td tapmode onclick="uploaderimg(6,this)">上传图片</td>
-			
-
-		</tr>
-		
-		<tr>
-			<th>轮播图0</th>
-			<td tapmode onclick="uploaderimg(0,this)">上传图片</td>
-			
-
-		</tr>
-		<tr>
-			<th>轮播图1</th>
-			<td tapmode onclick="uploaderimg(1,this)">上传图片</td>
-
-		</tr>
-		
-		<tr>
-			<th>轮播图2</th>
-			<td tapmode onclick="uploaderimg(2,this)">上传图片</td>
+			<td tapmode onclick="uploaderimg()">上传图片</td>
 			
 		</tr>
 		<tr>
-			<th>轮播图3</th>
-			<td tapmode onclick="uploaderimg(3,this)">上传图片</td>
-
-		</tr>
-		<tr>
-			<th>轮播图4</th>
-			<td tapmode onclick="uploaderimg(4,this)">上传图片</td>
+			<th>warelist</th>
+			<td tapmode onclick="addware()">添加warelist</td>
 			
 		</tr>
-		
 		<tr>
 			<th>上传</th>	
 			<td class="red"><input type="button" value="上传" tapmode onclick="save()"></td>
 		</tr>
 	</table>
-
+	<div>
+		<div id="imglist"></div>
+		<div id="warelist"></div>
+	</div>
+	
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/SHA1.js"></script>
 <script type="text/javascript">
 	var addInfo={};
 	var wareInfoId;
+	var imglist=[];
 	var now = Date.now();
 	var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
 	apiready = function(){
 
 	};
-	function select(){
-		var myselect=$api.byId("test");
-		var index=myselect.selectedIndex ;
-		addInfo.wareTypeId=myselect.options[index].value;
 
-	}
-	function uploaderimg(_data,_this){
-		$api.addCls(_this, 'imgcolor');
+	function uploaderimg(){
+		var imglist=$api.byId('imglist');
 		var UIAlbumBrowser = api.require('UIAlbumBrowser');
 		UIAlbumBrowser.open({
 			max: 9,
@@ -188,7 +114,11 @@
 					});
 
 				}else{
-					uploadAtavar(ret.list[0].path,_data);
+					imglist.push(ret.list[0].path);
+					for (var i =0; i <=imglist.length; i++) {
+							var img='<img src='+imglist[i]+'>';
+					}
+					imglist.innerHTML=img
 				}
 
 			}

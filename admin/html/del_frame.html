@@ -27,7 +27,7 @@
 	.ware-1 {
 		position: relative;
 		width: 100%;
-		height: 145px;
+		height: 200px;
 		box-sizing: border-box;
 		padding-top: 15px;
 		/*border: 1px solid red;*/
@@ -155,6 +155,36 @@
 	.active {
 		opacity: 0.7;
 	}
+	.video{
+		position: absolute;
+		right: 250px;
+    bottom:20px;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+
+  }
+  .video1{
+    position: absolute;
+    right: 130px;
+    bottom:20px;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+
+  }
+  .video2{
+    position: absolute;
+    right: 30px;
+    bottom:20px;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+
+  }
 </style>
 </head>
 
@@ -199,60 +229,78 @@
                     <img class="add" src="../image/add.png ">
                 </div>
             </div>
-        </div> -->
-    </section>
-    <div class="push-status" id="pushStatus">上拉显示更多</div>
-</body>
-<script type="text/template" id="template">
-	{{~it:value:index}}
-	<div class="ware ware-1" >
-		<div class="content" >
-			<img onload="LoadImage(this)" data-url="{{=value.thumbnail}}" class="thumbnail" src="../image/default_square.png">
-			<div class="info" >
-				<div class="name">{{=value.name}}</div>
-				<div class="description">{{=value.description}}</div>
-				<div class="price-tag">
-					<span class="price">￥{{=value.price}}</span>
+          </div> -->
+        </section>
+        <div class="push-status" id="pushStatus">上拉显示更多</div>
+      </body>
+      <script type="text/template" id="template">
+       {{~it:value:index}}
+       <div class="ware ware-1" >
+        <div class="content" >
+         <img onload="LoadImage(this)" data-url="{{=value.thumbnail}}" class="thumbnail" src="../image/default_square.png">
+         <div class="info" >
+          <div class="name">{{=value.name}}</div>
+          <div class="description">{{=value.description}}</div>
+          <div class="price-tag">
+           <span class="price">￥{{=value.price}}</span>
 
-				</div>
-			</div>
-			<div class="control">
-				<img class="no" src="../image/jian.png" tapmode onclick="no('{{=value.id}}','{{=value.wareInfo}}')">
-			</div>
+         </div>
+       </div>
 
-		</div>
-	</div>
-	{{~}}
+       <div class="video"  tapmode onclick="videoku('{{=value.id}}')">潮视短视频</div>
+       <div class="video1"  tapmode onclick="retuivideo('{{=value.id}}')">热推短视频</div>
+       <div class="video2"  tapmode onclick="updatevideo('{{=value.id}}')">修改热推</div>
+       <div class="control">
+        <img class="no" src="../image/jian.png" tapmode onclick="no('{{=value.id}}','{{=value.wareInfo}}')">
+      </div>
+
+    </div>
+  </div>
+  {{~}}
 
 </script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/SHA1.js"></script>
 <script type="text/javascript" src="../script/doT.min.js"></script>
 <script type="text/javascript">
-	apiready = function() {
-		init();
-		getWareList();
-		initRefresh();
-		initEventListenter();
+	var dialogBox;
+ var myDate = new Date();
+ var Y=myDate.getFullYear();
+ var M=myDate.getMonth()+1;
+ var D=myDate.getDate();  
+ var date;
+ apiready = function() {
+  date=Y+'-'+M+'-'+D;
+  dialogBox = api.require('dialogBox');
+  init();
+  getWareList();
+  initRefresh();
+  initEventListenter();
 
-	};
-	var activity ;
-	var wareTypeList;
-	var skip=0;
-	var LIMIT=20;
-	function init(){
-		wareTypeList=$api.getStorage('WareTypeList');
-	}
-	function openWareWin(_wareId){
-		api.openWin({
-			name: 'ware',
-			url: './ware.html',
-			pageParam: {
-				wareId: _wareId
-			}
-		});
+};
+var wareid;
+var now = Date.now();
+      //5FB51794-FCDC-1FE9-19E0-xxxxxxxxxxxx换成自己appkey
+      var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now
+      var videourl;
+      var texts;
+      var activity ;
+      var wareTypeList;
+      var skip=0;
+      var LIMIT=20;
+      function init(){
+      	wareTypeList=$api.getStorage('WareTypeList');
+      }
+      function openWareWin(_wareId){
+      	api.openWin({
+      		name: 'ware',
+      		url: './ware.html',
+      		pageParam: {
+      			wareId: _wareId
+      		}
+      	});
 
-	}
+      }
 // 获取列表页数据
 function getWareList(_LoadMore){
 	activity = api.require('UILoading');
@@ -272,58 +320,56 @@ function getWareList(_LoadMore){
 		}
 	});
 
-	var now = Date.now();
-      //5FB51794-FCDC-1FE9-19E0-xxxxxxxxxxxx换成自己appkey
-      var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now
-      if (_LoadMore) {
-      	skip+=LIMIT;
-      }else{
-      	skip=0;
-      }
-      var params={
-      	fields:{},
-      	fields: {},
-      	where: {
+	
+	if (_LoadMore) {
+		skip+=LIMIT;
+	}else{
+		skip=0;
+	}
+	var params={
+		fields:{},
+		fields: {},
+		where: {
 
-      	},
-      	skip:skip,
-      	limit:LIMIT,
-      	order:"createdAt DESC"
-      }
-      params=$api.jsonToStr(params);
-      api.ajax({
-      	url: 'http://d.apicloud.com/mcm/api/ware?filter='+params,
-      	method: 'get',
-      	headers: {
-      		"X-APICloud-AppId": "A6099267504667",
-      		"X-APICloud-AppKey":   appKey
-      	},
+		},
+		skip:skip,
+		limit:LIMIT,
+		order:"createdAt DESC"
+	}
+	params=$api.jsonToStr(params);
+	api.ajax({
+		url: 'http://d.apicloud.com/mcm/api/ware?filter='+params,
+		method: 'get',
+		headers: {
+			"X-APICloud-AppId": "A6099267504667",
+			"X-APICloud-AppKey":   appKey
+		},
 
-      },function(ret, err){
-      	if (ret) {
+	},function(ret, err){
+		if (ret) {
           // 隐藏下拉刷新
           api.refreshHeaderLoadDone()
          // 模板渲染
          // alert($api.jsonToStr( ret))
          updateWareList(ret,_LoadMore);
-     } else {
-     	api.toast({
-     		msg: err.msg,
-     		duration: 2000,
-     		location: 'bottom'
-     	});
-     }
- });
-  }
-  function updateWareList(_data,_LoadMore){
-  	var list=$api.byId('list');
-  	var tempFn=doT.template($api.byId('template').innerHTML);
-  	var resultText=tempFn(_data)
-  	if (_LoadMore) {
-  		$api.append(list, resultText);
-  	}else{
-  		$api.html(list, resultText);
-  	}
+       } else {
+        api.toast({
+         msg: err.msg,
+         duration: 2000,
+         location: 'bottom'
+       });
+      }
+    });
+}
+function updateWareList(_data,_LoadMore){
+	var list=$api.byId('list');
+	var tempFn=doT.template($api.byId('template').innerHTML);
+	var resultText=tempFn(_data)
+	if (_LoadMore) {
+		$api.append(list, resultText);
+	}else{
+		$api.html(list, resultText);
+	}
     // 优化
     api.parseTapmode();
     if (_LoadMore) {
@@ -333,7 +379,7 @@ function getWareList(_LoadMore){
     	}
     }
     activity.closeKeyFrame();
-}
+  }
 
 // 列表页图片缓存
 
@@ -352,8 +398,8 @@ function LoadImage(_this){
 
 			}else{
              // alert( JSON.stringify( err ) );
-         }
-     });
+           }
+         });
 	}
 
 }
@@ -402,8 +448,8 @@ function no(id,_data){
       		delwareinfo(_data);
       	} 
       });
-  }
-});
+    }
+  });
 	
 }
 function delwareinfo(_data){
@@ -425,7 +471,368 @@ function delwareinfo(_data){
       });
 
 
+    }
+
+    function videoku(ret){
+     wareid=ret;
+     api.getPicture({
+      sourceType: 'library',
+      encodingType: 'jpg',
+      mediaValue: 'video',
+      destinationType: 'url',
+      allowEdit: true,
+      quality: 50,
+      saveToPhotoAlbum: false
+    }, function(ret, err) {
+     if (ret) {
+      if (ret.data!='') {
+       videourl=ret.data;
+       input();
+     }
+   } 
+ });
+
+   }
+
+   function input(){
+
+     dialogBox.input({
+      keyboardType: 'default',
+      texts: {
+       title: '发布视频',
+       placeholder: '说两句吧!',
+       leftBtnTitle: '取消',
+       rightBtnTitle: '确定'
+     },
+     styles: {
+       bg: '#fff',
+       corner: 2,
+       w: 300,
+       h: 240,
+       title: {
+        h: 60,
+        alignment: 'center',
+        size: 14,
+        color: '#000',
+        marginT:30,
+      },
+      input: {
+        h: 60,
+        y:30,
+        marginT:15,
+        marginLeft: 10,
+        marginRight:10,
+        textSize: 14,
+        textColor: '#000'
+      },
+      dividingLine: {
+        width: 0.5,
+        color: '#696969'
+      },
+      left: {
+        bg: 'rgba(0,0,0,0)',
+        color: '#000',
+        size: 12
+      },
+      right: {
+        bg: 'rgba(0,0,0,0)',
+        color: '#000',
+        size: 12
+      }
+    }
+  }, function(ret) {
+
+    if (ret.eventType == 'left') {
+     api.toast({
+      msg: '取消视频上传',
+      duration: 2000,
+      location: 'bottom'
+    });
+     dialogBox.close({
+      dialogName: 'input'
+    });
+   }else{
+     if (ret.text=='') {
+      texts='话太多...视频表达'
+    }else{
+      texts=ret.text;
+    }
+
+    addvideourl(texts);
+
+    dialogBox.close({
+      dialogName: 'input'
+    });
+
+
   }
+});
+
+   }
+
+   function addvideourl(text){
+     api.toast({
+      msg: '视频上传时勿退出潮视页面,否则放弃上传视频',
+      duration: 10000,
+      location: 'bottom'
+    });
+     var now = Date.now();
+     var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+     api.ajax({
+      url: 'https://d.apicloud.com/mcm/api/file',
+      method: 'post',
+      data: {
+       values: { 
+        filename: 'video'
+      },
+      files: { 
+        file: videourl
+      }
+    },
+    headers: {
+     "X-APICloud-AppId": "A6099267504667",
+     "X-APICloud-AppKey":   appKey
+   },
+ },function(ret, err){
+  if (ret) {
+   addtext(text,ret);
+
+ } else {
+   api.toast({
+    msg: err.msg,
+    duration: 2000,
+    location: 'bottom'
+  });
+ }
+});
+
+   }
+
+   function addtext(texts,video){
+
+     var addinfo={
+      title:texts,
+      userid:'5cea84e6b886fb9a6f37b747',
+      username:'17783893149',
+      video:video,
+      like:'0',
+      money:'0',
+      down:'0',
+      wareid:wareid
+
+    }
+    var now = Date.now();
+      //5FB51794-FCDC-1FE9-19E0-xxxxxxxxxxxx换成自己appkey
+      var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+      var userInfo=$api.getStorage('userInfo');
+      api.ajax({
+      	url: 'https://d.apicloud.com/mcm/api/video1',
+      	method: 'post',
+      	headers: {
+      		"X-APICloud-AppId": "A6099267504667",
+      		"X-APICloud-AppKey":   appKey,
+
+      	},
+      	data: {
+      		values: addinfo
+      	}
+      }, function(ret, err) {
+
+      	addwarevideo(video);
+
+      });
+    }
+
+    function addwarevideo(video){
+     api.ajax({
+      url: 'https://d.apicloud.com/mcm/api/ware/'+wareid,
+      method: 'put',
+      headers: {
+       "X-APICloud-AppId": "A6099267504667",
+       "X-APICloud-AppKey":   appKey,
+
+     },
+     data: {
+       values:{
+        "video": video
+      }
+
+    }
+  }, function(ret, err) {
+
+    api.toast({
+     msg: '视频上传成功',
+     duration: 5000,
+     location: 'bottom'
+   });
+
+
+
+  });
+
+
+   }
+
+
+
+   function retuivideo(ret){
+    wareid=ret;
+    api.getPicture({
+      sourceType: 'library',
+      encodingType: 'jpg',
+      mediaValue: 'video',
+      destinationType: 'url',
+      allowEdit: true,
+      quality: 50,
+      saveToPhotoAlbum: false
+    }, function(ret, err) {
+     if (ret) {
+      if (ret.data!='') {
+       videourl=ret.data;
+       addretuivideourl();
+     }
+   } 
+ });
+
+  }
+
+  function addretuivideourl(){
+   api.toast({
+    msg: '视频上传时勿退出潮视页面,否则放弃上传视频',
+    duration: 10000,
+    location: 'bottom'
+  });
+   var now = Date.now();
+   var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+   api.ajax({
+    url: 'https://d.apicloud.com/mcm/api/file',
+    method: 'post',
+    data: {
+     values: { 
+      filename: 'video'
+    },
+    files: { 
+      file: videourl
+    }
+  },
+  headers: {
+   "X-APICloud-AppId": "A6099267504667",
+   "X-APICloud-AppKey":   appKey
+ },
+},function(ret, err){
+  if (ret) {
+   addretui(ret);
+
+ } 
+});
+ }
+
+ function addretui(video){
+  var addinfo={
+    wareid:wareid,
+    date:date
+
+  }
+  var now = Date.now();
+      //5FB51794-FCDC-1FE9-19E0-xxxxxxxxxxxx换成自己appkey
+      var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+      
+      api.ajax({
+        url: 'https://d.apicloud.com/mcm/api/retuivideo',
+        method: 'post',
+        headers: {
+          "X-APICloud-AppId": "A6099267504667",
+          "X-APICloud-AppKey":   appKey,
+
+        },
+        data: {
+          values: addinfo
+        }
+      }, function(ret, err) {
+
+        addwarevideo(video);
+
+      });
+
+    }
+// 修改热推视频
+function updatevideo(wareid) {
+ api.getPicture({
+  sourceType: 'library',
+  encodingType: 'jpg',
+  mediaValue: 'video',
+  destinationType: 'url',
+  allowEdit: true,
+  quality: 50,
+  saveToPhotoAlbum: false
+}, function(ret, err) {
+ if (ret) {
+  if (ret.data!='') {
+    file(ret.data,wareid);
+ }
+} 
+});
+
+} 
+function file(video2,wareid) {
+ api.toast({
+  msg: '视频上传时勿退出潮视页面,否则放弃上传视频',
+  duration: 10000,
+  location: 'bottom'
+});
+ var now = Date.now();
+ var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+ api.ajax({
+  url: 'https://d.apicloud.com/mcm/api/file',
+  method: 'post',
+  data: {
+   values: { 
+    filename: 'video'
+  },
+  files: { 
+    file: video2
+  }
+},
+headers: {
+ "X-APICloud-AppId": "A6099267504667",
+ "X-APICloud-AppKey":   appKey
+},
+},function(ret, err){
+  if (ret) {
+   updatewarevideo(ret,wareid);
+
+ } 
+});
+}
+
+function updatewarevideo(ret,wareid) {
+ api.ajax({
+  url: 'https://d.apicloud.com/mcm/api/ware/'+wareid,
+  method: 'put',
+  headers: {
+   "X-APICloud-AppId": "A6099267504667",
+   "X-APICloud-AppKey":   appKey,
+
+ },
+ data: {
+   values:{
+    "video": ret
+  }
+
+}
+}, function(ret, err) {
+
+  api.toast({
+   msg: '视频上传成功',
+   duration: 5000,
+   location: 'bottom'
+ });
+
+
+
+});
+
+} 
 </script>
 
 </html>
