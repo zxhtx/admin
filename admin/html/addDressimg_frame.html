@@ -44,6 +44,11 @@
 	.imgcolor{
 		color: red;
 	}
+	.imglist{
+		width: 100px;
+		height: 100px;
+		display: inline-block;
+	}
 </style>
 </head>
 <body>
@@ -59,13 +64,47 @@
 			
 		</tr>
 		<tr>
+			<th></th>
+			<td></td>
+
+			
+		</tr>
+		<tr>
+			<th></th>
+			<td></td>
+			
+			
+		</tr>
+		<tr>
+			<th></th>
+			<td tapmode onclick="biu()">biu一下</td>
+			
+		</tr>
+		<tr>
+			<th></th>
+			<td></td>
+			
+			
+		</tr>
+		<tr>
+			<th></th>
+			<td></td>
+			
+			
+		</tr>
+		<tr>
 			<th>上传</th>	
 			<td class="red"><input type="button" value="上传" tapmode onclick="save()"></td>
 		</tr>
 	</table>
 	<div>
 		<div id="imglist"></div>
-		<div id="warelist"></div>
+		<br>
+		warelist:
+		<div id="warelist" style="word-wrap:break-word ;"></div>
+		<br>
+		rootware:
+		<div id="rootwarelist1" style="word-wrap:break-word ;"></div>
 	</div>
 	
 </body>
@@ -75,14 +114,34 @@
 	var addInfo={};
 	var wareInfoId;
 	var imglist=[];
+	var warelist=[];
+	var rootware=[];
 	var now = Date.now();
 	var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
 	apiready = function(){
-
+		event();
 	};
+	function biu(){
+		rootware.push(warelist);
+		warelist=[];
+		var rootwarelist1=$api.byId('rootwarelist1');
+		rootwarelist1.innerHTML=rootware;
+		addInfo.rootware=rootware;
 
+	}
+	function event(){
+		api.addEventListener({
+			name: 'addDressing'
+		}, function(ret, err){
+			if( ret ){
+				warelist.push( $api.jsonToStr(ret.value.key1));
+				var warelist1=$api.byId('warelist');
+				warelist1.innerHTML=warelist; 
+			}
+		});
+	}	
 	function uploaderimg(){
-		var imglist=$api.byId('imglist');
+		var img1=$api.byId('imglist');
 		var UIAlbumBrowser = api.require('UIAlbumBrowser');
 		UIAlbumBrowser.open({
 			max: 9,
@@ -114,11 +173,10 @@
 					});
 
 				}else{
-					imglist.push(ret.list[0].path);
-					for (var i =0; i <=imglist.length; i++) {
-							var img='<img src='+imglist[i]+'>';
-					}
-					imglist.innerHTML=img
+					var img="<img class='imglist' src="+ret.list[0].path+">";
+					$api.append(img1,img);
+					uploadAtavar(ret.list[0].path)
+
 				}
 
 			}
@@ -129,34 +187,7 @@
 		
 
 	}
-	function uploadAtavar(_data,number){
-		var name=$api.byId('name').value;
-		var price=$api.byId('price').value;
-		var jieshao=$api.byId('jieshao').value;
-		var  shangjia=$api.byId('shangjia').value;
-
-		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
-			var size=$api.byId('size').value;
-			var arrsize=size.split("-");
-			var start=arrsize[0];
-			var end=arrsize[1];
-			var addarr=[];
-			for (var i = start; i <=end; i++) {
-				addarr.push(i);
-			};
-
-		}else {
-			var size=$api.byId('size').value;
-			var addarr=size.split("-");
-
-		}
-
-		var color=$api.byId('color').value;
-		var arrcolor=color.split("-");
-
-
-
-
+	function uploadAtavar(_data){
 		api.ajax({
 			url: 'https://d.apicloud.com/mcm/api/file',
 			method: 'post',
@@ -174,155 +205,36 @@
 			},
 		},function(ret, err){
 			if (ret) {
-				// alert($api.jsonToStr(ret))
-				if (number==6) {
-					addInfo.thumbnail=ret.url;
-				}
-
-				addInfo.name=name;
-				addInfo.price=price;
-				addInfo.description=jieshao;
-				addInfo.size=addarr;
-				addInfo.color=arrcolor;
-				addInfo.shangjia=shangjia;
-				uploaderimgs(ret,number)
-			} else {
+				imglist.push(ret.url)
+				addInfo.imglist=imglist;
+				addInfo.type=0;
 				api.toast({
-					msg: err.msg,
+					msg: '图片上传成功',
 					duration: 2000,
 					location: 'bottom'
 				});
-			}
+			} 
 		});
 	}
 
-	function uploaderimgs(_data,number){
-		if (number==0) {
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo',
-				method: 'post',
-				data: {
-					values: { 
-						picture0:_data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						wareInfoId=ret.id;
-						addInfo.wareInfo=ret.id;
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					} 
-				});
-		}else if (number==1){
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo/'+wareInfoId,
-				method: 'put',
-				data: {
-					values: { 
-						picture1: _data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					}
-				});
-		}else if (number==2){
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo/'+wareInfoId,
-				method: 'put',
-				data: {
-					values: { 
-						picture2: _data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					}
-				});
-		}else if (number==3){
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo/'+wareInfoId,
-				method: 'put',
-				data: {
-					values: { 
-						picture3: _data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					}
-				});
+	
+	function addware(){
+		api.openFrame({
+			name: 'warelist_frame',
+			url: './warelist_frame.html',
+			rect: {
+				x: 0,
+				y: 0,
+				w: api.winWidth,
+				h: api.winHeight
+			},
 
-		}else{
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo/'+wareInfoId,
-				method: 'put',
-				data: {
-					values: { 
-						picture4: _data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					}
-				});
-
-		}
-
+		});
+		
 	}
-
 	function save(){
 		api.ajax({
-			url: 'https://d.apicloud.com/mcm/api/ware',
+			url: 'https://d.apicloud.com/mcm/api/Dressing',
 			method: 'post',
 			data: {
 				values:addInfo

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>登录Frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    header {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        z-index: 9999;
+        width: 100%;
+        height: 40px;
+        background-color: white
+    }
+    
+    header .back {
+       position: absolute;
+       bottom: 0;
+       left: 0;
+       width: 40px;
+       height: 40px;
+       background: url(../image/back.png);
+       background-position: 12px 9px;
+       background-size: 11px 18px;
+       background-repeat: no-repeat;
+   }
+
+   header h1 {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    color: black;
+    font-size: 16px;
+}
+
+header .right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    color: black;
+    font-size: 15px;
+    text-align: center;
+}
+section {
+    margin-top: 20px;
+    position: relative;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    padding: 0 8px;
+}
+
+.content {
+    width: 100%;
+    height: 100%;
+}
+
+
+
+.ware-1 {
+    position: relative;
+    width: 100%;
+    height: 130px;
+    box-sizing: border-box;
+    padding-top: 15px;
+    /*border: 1px solid red;*/
+    padding-bottom: 15px;
+    border-bottom: 1px solid #d1d1d1;
+}
+
+.ware-1 .thumbnail {
+    position: absolute;
+    top: 20px;
+    left: 0px;
+    height: 100px;
+    width: 100px;
+}
+
+.ware-1 .info {
+    width: 100%;
+    height: 114px;
+    box-sizing: border-box;
+    padding-left: 112px;
+    padding-right: 28px;
+}
+
+.ware-1 .info .name {
+    width: 100%;
+    height: 15px;
+    color: #555555;
+    margin-top: 14px;
+    font-size: 15px;
+}
+
+.ware-1 .info .description {
+    margin-top: 10px;
+    width: 100%;
+    height: 13px;
+    font-size: 13px;
+    color: #9d9d9d;
+}
+
+.ware-1 .info .price-tag {
+    margin-top: 10px;
+    width: 100%;
+    height: 12px;
+    font-size: 12px;
+    vertical-align: top;
+}
+
+.ware-1 .info .price-tag .price {
+    color: black;
+    font-size: 16px;
+    margin-top: 16px;
+}
+.imgcolor{
+    background-color: gray;
+}
+
+</style>
+</head>
+
+<body>
+   <header>
+    <div class="back" tapmode onclick="api.closeFrame();"></div>
+    <h1>选择wareid</h1>
+    <div class="right" tapmode onclick="ok()">确定</div>
+</header>
+<section id="list">
+
+</section>
+<div class="push-status" id="pushStatus">上拉显示更多</div>
+</body>
+
+<script type="text/template" id="template">
+   {{~it:value:index}}
+   <div class="ware ware-1"  data-select='0' tapmode onclick="sele(this,'{{=value.id}}')"  >
+    <div class="content" >
+        <img class="thumbnail" src="{{=value.thumbnail}}">
+        <div class="info" >
+          <div class="name">{{=value.name}}</div>
+          <div class="description">{{=value.description}}</div>
+          <div class="price-tag">
+           <span class="price">￥{{=value.price}}</span>
+
+       </div>
+   </div>
+
+
+
+</div>
+</div>
+{{~}}
+
+</script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/SHA1.js"></script>
+<script type="text/javascript" src="../script/doT.min.js"></script>
+
+<script type="text/javascript">
+  var skip=0;
+  var LIMIT=20;
+  var warelist=[];
+  var now = Date.now();
+  var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now
+  apiready = function() {
+    getWareList();
+    initEventListenter();
+
+};
+function sele(_this,_wareid){
+  var TN= $api.attr(_this, 'data-select');
+if(TN==0) {
+    $api.addCls(_this, 'imgcolor');
+    $api.attr(_this, 'data-select','1');
+    warelist.push(_wareid);
+  
+}else{
+
+    for (var i = 0; i<warelist.length; i++) {
+        if(warelist[i]==_wareid){
+            warelist.splice(i,1)
+        }
+    }
+    $api.removeCls(_this, 'imgcolor');
+    $api.attr(_this, 'data-select','0');    
+
+}
+}
+
+function ok(){
+    api.sendEvent({
+        name: 'addDressing',
+        extra: {
+            key1: warelist, 
+        }
+    });
+    api.closeFrame();
+}
+    // 监听 
+    function initEventListenter(){
+        api.addEventListener({
+            name:'scrolltobottom',
+            extra:{
+                threshold:100
+            }
+        }, function(ret, err){        
+            getWareList(true);
+        });
+    }
+
+    function getWareList(_LoadMore){
+
+
+        if (_LoadMore) {
+            skip+=LIMIT;
+        }else{
+            skip=0;
+        }
+        var params={
+            fields:{},
+            fields: {},
+            where: {
+
+            },
+            skip:skip,
+            limit:LIMIT,
+            order:"createdAt DESC"
+        }
+        params=$api.jsonToStr(params);
+        api.ajax({
+            url: 'http://d.apicloud.com/mcm/api/ware?filter='+params,
+            method: 'get',
+            headers: {
+                "X-APICloud-AppId": "A6099267504667",
+                "X-APICloud-AppKey":   appKey
+            },
+
+        },function(ret, err){
+            if (ret) {
+
+         // 模板渲染
+         // alert($api.jsonToStr( ret))
+         updateWareList(ret,_LoadMore);
+     } else {
+        api.toast({
+         msg: err.msg,
+         duration: 2000,
+         location: 'bottom'
+     });
+    }
+});
+    }
+    function updateWareList(_data,_LoadMore){
+        var list=$api.byId('list');
+        var tempFn=doT.template($api.byId('template').innerHTML);
+        var resultText=tempFn(_data)
+        if (_LoadMore) {
+            $api.append(list, resultText);
+        }else{
+            $api.html(list, resultText);
+        }
+    // 优化
+    api.parseTapmode();
+    if (_LoadMore) {
+        if (_data.length<LIMIT) {
+            var pushStatus=$api.byId('pushStatus');
+            pushStatus.innerHTML="我是有底线滴"
+        }
+    }
+
+}
+
+</script>
+
+</html>
