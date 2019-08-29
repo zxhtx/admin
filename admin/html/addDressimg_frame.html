@@ -54,6 +54,16 @@
 <body>
 	<table class="gridtable" id="list">
 		<tr>
+			<th>商品所属类</th>
+			<td>
+				<select id="test" tapmode onchange="select()" name="">
+					<option value="">请选择</option>
+					<option value="0">穿搭</option>
+					<option value="1">潮图</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
 			<th>封面</th>
 			<td tapmode onclick="uploaderimg()">上传图片</td>
 			
@@ -108,6 +118,7 @@
 	</div>
 	
 </body>
+<script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/SHA1.js"></script>
 <script type="text/javascript">
@@ -116,17 +127,30 @@
 	var imglist=[];
 	var warelist=[];
 	var rootware=[];
+	var mydate=new Date();
+	var y=mydate.getFullYear();
+	var m=mydate.getMonth()+1;
+	var d=mydate.getDate();
+	var date=y+'-'+m+'-'+d;
 	var now = Date.now();
 	var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
 	apiready = function(){
 		event();
+		addInfo.date=date;
 	};
+	function select(){
+		var myselect=$api.byId("test");
+		var index=myselect.selectedIndex ;
+		addInfo.type=myselect.options[index].value;
+		// alert(addInfo.type)
+
+	}
 	function biu(){
 		rootware.push(warelist);
 		warelist=[];
 		var rootwarelist1=$api.byId('rootwarelist1');
 		rootwarelist1.innerHTML=rootware;
-		addInfo.rootware=rootware;
+		addInfo.warelist=rootware;
 
 	}
 	function event(){
@@ -134,7 +158,7 @@
 			name: 'addDressing'
 		}, function(ret, err){
 			if( ret ){
-				warelist.push( $api.jsonToStr(ret.value.key1));
+				warelist=ret.value.key1;
 				var warelist1=$api.byId('warelist');
 				warelist1.innerHTML=warelist; 
 			}
@@ -175,7 +199,30 @@
 				}else{
 					var img="<img class='imglist' src="+ret.list[0].path+">";
 					$api.append(img1,img);
-					uploadAtavar(ret.list[0].path)
+					// uploadAtavar(ret.list[0].path)
+					// var listimg=[];
+					// for (var i = 0; i <ret.list.length; i++) {
+						// listimg.push(ret.list[i].path)	
+					// }
+					// alert(listimg);
+					// var formData = new FormData();
+					// formData.append("img",ret.list[0].path);
+					api.ajax({
+						url: 'http://www.chaoxi.com/index.php/moreimg',
+						method: 'post',
+						data: {
+							files: { 
+								file: ret.list[0].path
+							}
+						},
+						
+					},function(ret, err){
+						if (ret) {
+							alert($api.jsonToStr(ret));
+						} 
+					});
+
+
 
 				}
 
@@ -207,7 +254,6 @@
 			if (ret) {
 				imglist.push(ret.url)
 				addInfo.imglist=imglist;
-				addInfo.type=0;
 				api.toast({
 					msg: '图片上传成功',
 					duration: 2000,
