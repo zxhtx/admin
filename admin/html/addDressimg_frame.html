@@ -165,6 +165,21 @@
 		});
 	}	
 	function uploaderimg(){
+		
+		if (str.match(re)!=null){
+			api.toast({
+				msg: '图片不允许中文名称',
+				duration: 5000,
+				location: 'bottom'
+			});
+		}else{
+			api.toast({
+				msg: '正常',
+				duration: 2000,
+				location: 'bottom'
+			});
+		}
+		return;
 		var img1=$api.byId('imglist');
 		var UIAlbumBrowser = api.require('UIAlbumBrowser');
 		UIAlbumBrowser.open({
@@ -202,11 +217,13 @@
 					// uploadAtavar(ret.list[0].path)
 					var listimg=[];
 					for (var i = 0; i <ret.list.length; i++) {
-						if (/[\x00-\xff]/g.test(ret.list[i].path)){
+						var str=ret.list[i].path;
+						var re=/[\u0391-\uFFE5]+/g;
+						if (str.match(re)!=null){
 							api.toast({
-							    msg: '图片不允许中文名称',
-							    duration: 2000,
-							    location: 'bottom'
+								msg: '图片不允许中文名称',
+								duration: 2000,
+								location: 'bottom'
 							});
 						}else{
 							listimg.push(ret.list[i].path)	
@@ -251,8 +268,8 @@
 		});
 
 
-		
-		
+
+
 
 	}
 	function uploadAtavar(_data){
@@ -284,7 +301,7 @@
 		});
 	}
 
-	
+
 	function addware(){
 		api.openFrame({
 			name: 'warelist_frame',
@@ -297,7 +314,7 @@
 			},
 
 		});
-		
+
 	}
 	function save(){
 		api.ajax({
