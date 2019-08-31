@@ -118,7 +118,7 @@
 	</div>
 	
 </body>
-<!-- <script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script> -->
+<script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/SHA1.js"></script>
 <script type="text/javascript">
@@ -165,140 +165,94 @@
 		});
 	}	
 	function uploaderimg(){
-		api.getPicture({
-			sourceType: 'library',
-			encodingType: 'jpg',
-			mediaValue: 'pic',
-			destinationType: 'url',
-			allowEdit: true,
-			quality: 50,
-			targetWidth: 100,
-			targetHeight: 100,
-			saveToPhotoAlbum: false
-		}, function(ret, err) {
-			api.ajax({
-					method:'post',
-					url : 'http://api.chaodashe.com/index.php/moreimg',
-					data : {
-						files:{image:ret.data},
-					},
-					// dataType : 'json',
-				}, function(ret, err) {
+		var img1=$api.byId('imglist');
+		var UIAlbumBrowser = api.require('UIAlbumBrowser');
+		UIAlbumBrowser.open({
+			max: 9,
+			styles: {
+				bg: '#fff',
+				mark: {
+					icon: '',
+					position: 'bottom_left',
+					size: 20
+				},
+				nav: {
+					bg: 'rgba(0,0,0,0.6)',
+					titleColor: '#fff',
+					titleSize: 18,
+					cancelColor: '#fff',
+					cancelSize: 16,
+					finishColor: '#fff',
+					finishSize: 16
+				}
+			},
+			rotation: true
+		}, function(ret) {
+			if (ret) {
+				if (ret.list=='[]' || ret.list=='' || ret.list==undefined) {
+					api.toast({
+						msg: '未检测到图片路径',
+						duration: 2000,
+						location: 'bottom'
+					});
+
+				}else{
+					var img="<img class='imglist' src="+ret.list[0].path+">";
+					$api.append(img1,img);
+					// uploadAtavar(ret.list[0].path)
+					var listimg=[];
+					for (var i = 0; i <ret.list.length; i++) {
+						if (escape(ret.list[i].path).indexOf("%u") !=-1){
+							api.toast({
+							    msg: '图片不允许中文名称',
+							    duration: 2000,
+							    location: 'bottom'
+							});
+						}else{
+							listimg.push(ret.list[i].path)	
+						}
+						return;
+					}
 					
-					alert(JSON.stringify(ret));
-				});
+					
+					api.ajax({
+						url: 'http://api.chaodashe.com/index.php/moreimg',
+						method:'post',
+						dataType:'json',
+						data: {
+							files:{ 
+								"image[]":listimg
+							}
+						},
+					},function(ret, err){
+						// if (ret) {
+						// 	imglist.push(ret.url)
+						// 	addInfo.imglist=imglist;
+						// 	api.toast({
+						// 		msg: '图片上传成功',
+						// 		duration: 2000,
+						// 		location: 'bottom'
+						// 	});
+						// } 
+						// alert($api.jsonToStr(ret))
+						
+						// api.toast({
+						//     msg: ret,
+						//     duration: 2000,
+						//     location: 'bottom'
+						// });
+					});
+
+
+
+				}
+
+			}
 		});
-		// var img1=$api.byId('imglist');
-		// var UIAlbumBrowser = api.require('UIAlbumBrowser');
-		// UIAlbumBrowser.open({
-		// 	max: 9,
-		// 	styles: {
-		// 		bg: '#fff',
-		// 		mark: {
-		// 			icon: '',
-		// 			position: 'bottom_left',
-		// 			size: 20
-		// 		},
-		// 		nav: {
-		// 			bg: 'rgba(0,0,0,0.6)',
-		// 			titleColor: '#fff',
-		// 			titleSize: 18,
-		// 			cancelColor: '#fff',
-		// 			cancelSize: 16,
-		// 			finishColor: '#fff',
-		// 			finishSize: 16
-		// 		}
-		// 	},
-		// 	rotation: true
-		// }, function(ret) {
-		// 	if (ret) {
-		// 		if (ret.list=='[]' || ret.list=='' || ret.list==undefined) {
-		// 			api.toast({
-		// 				msg: '未检测到图片路径',
-		// 				duration: 2000,
-		// 				location: 'bottom'
-		// 			});
-
-		// 		}else{
-		// 			var img="<img class='imglist' src="+ret.list[0].path+">";
-		// 			$api.append(img1,img);
-		// 			// uploadAtavar(ret.list[0].path)
-		// 			var listimg=[];
-		// 			for (var i = 0; i <ret.list.length; i++) {
-		// 				listimg.push(ret.list[i].path)	
-		// 			}
-
-		// 			// var formData = new FormData();
-		// 			// formData.append("img",ret.list[0].path);
-		// 			// var formData = new FormData();
-		// 			// var file = document.querySelector('input[type=file]').files[0];
-		// 			// formData.append("image",ret.list[0].path);
-		// 			// alert($api.jsonToStr(formData));
-		// 			// formData.append("userid",userInfo.id);
-		// 			var params={
-		// 				image:ret.list[0].path
-		// 			}
-					// $.ajax({
-					// 	url:'http://api.chaodashe.com/index.php/moreimg',
-					// 	data:params,
-					// 	type:"post",
-					// 	dataType:'json',
-					// 	processData:false,
-					// 	contentType:false,
-					// 	success:function(result){
-					// 		// console.log(result);
-					// 		alert(result);
-					// 	},
-					// 	error:function(e){
-					// 		alert($api.jsonToStr(e));
-					// 	}
-					// })
-
-					// $.ajax({
-					// 	type: 'post',
-					// 	url: 'http://api.chaodashe.com/index.php/moreimg',
-					// 	dataType: 'json',
-					// 	data:{'image':ret.list[0].path},
-					// 	// contentType: false,
-					// 	// processData: false,
-					// 	success: function (data) {
-					// 		alert($api.jsonToStr(data))
-
-					// 	},
-					// 	error: function (data) {
-					// 		// console.log(data);
-					// 		alert($api.jsonToStr(data))
-					// 	},
-					// });
-					// api.ajax({
-					// 	url: 'http://api.chaodashe.com/index.php/moreimg',
-					// 	method:'post',
-					// 	dataType:'json',
-					// 	data: {
-					// 		files:{ 
-					// 			image:ret.list[0]
-					// 		}
-					// 	},
-					// },function(ret, err){
-					// 	// if (ret) {
-					// 	// 	imglist.push(ret.url)
-					// 	// 	addInfo.imglist=imglist;
-					// 	// 	api.toast({
-					// 	// 		msg: '图片上传成功',
-					// 	// 		duration: 2000,
-					// 	// 		location: 'bottom'
-					// 	// 	});
-					// 	// } 
-					// 	alert(ret)
-					// });
 
 
-
-				// }
-
-		// 	}
-		// });
-
+		
+		
 
 	}
 	function uploadAtavar(_data){
