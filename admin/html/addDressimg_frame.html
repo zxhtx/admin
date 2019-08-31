@@ -202,7 +202,7 @@
 					// uploadAtavar(ret.list[0].path)
 					var listimg=[];
 					for (var i = 0; i <ret.list.length; i++) {
-						if (escape(ret.list[i].path).indexOf("%u") !=-1){
+						if (/[\x00-\xff]/g.test(ret.list[i].path)){
 							api.toast({
 							    msg: '图片不允许中文名称',
 							    duration: 2000,
