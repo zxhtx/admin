@@ -165,6 +165,30 @@
 		});
 	}	
 	function uploaderimg(){
+
+		var str='em\\哈哈哈\\哈哈.png';
+		var strs=new Array();
+		var pat=/\//;
+		var endstr;
+		// var endstr;
+		endstr=str.match(pat);
+		if(endstr=='/'){
+			strs=str.split('/');
+			str=strs[strs.length-1];
+		}else{
+			strs=str.split('\\');
+			str=strs[strs.length-1];
+		}
+		alert(str);
+		var re=/[\u0391-\uFFE5]+/g;
+		if (str.match(re)!=null){
+			api.toast({
+				msg: '图片不允许中文名称',
+				duration: 2000,
+				location: 'bottom'
+			});
+		}
+		return;
 		
 		var img1=$api.byId('imglist');
 		var UIAlbumBrowser = api.require('UIAlbumBrowser');
@@ -203,7 +227,24 @@
 					// uploadAtavar(ret.list[0].path)
 					var listimg=[];
 					for (var i = 0; i <ret.list.length; i++) {
+						// 获取本地路径
 						var str=ret.list[i].path;
+						// 把本地路径放在数组中
+						var strs=new Array();
+						var pat=/\//;
+						// 在不同的系统中路径分隔不同 需要判断做处理拿到图片名(例如:123.png)
+						var line;
+
+						line=str.match(pat);
+						// 判断正反斜杠 进行下一步图片名中文
+						if(line=='/'){
+							strs=str.split('/');
+							str=strs[strs.length-1];
+						}else{
+							strs=str.split('\\');
+							str=strs[strs.length-1];
+						}
+						// 正则中文判断
 						var re=/[\u0391-\uFFE5]+/g;
 						if (str.match(re)!=null){
 							api.toast({
