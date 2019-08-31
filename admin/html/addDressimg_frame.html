@@ -166,29 +166,6 @@
 	}	
 	function uploaderimg(){
 
-		var str='em\\哈哈哈\\哈哈.png';
-		var strs=new Array();
-		var pat=/\//;
-		var endstr;
-		// var endstr;
-		endstr=str.match(pat);
-		if(endstr=='/'){
-			strs=str.split('/');
-			str=strs[strs.length-1];
-		}else{
-			strs=str.split('\\');
-			str=strs[strs.length-1];
-		}
-		alert(str);
-		var re=/[\u0391-\uFFE5]+/g;
-		if (str.match(re)!=null){
-			api.toast({
-				msg: '图片不允许中文名称',
-				duration: 2000,
-				location: 'bottom'
-			});
-		}
-		return;
 		
 		var img1=$api.byId('imglist');
 		var UIAlbumBrowser = api.require('UIAlbumBrowser');
@@ -252,10 +229,11 @@
 								duration: 2000,
 								location: 'bottom'
 							});
+							continue;
 						}else{
 							listimg.push(ret.list[i].path)	
 						}
-						return;
+						
 					}
 					
 					
