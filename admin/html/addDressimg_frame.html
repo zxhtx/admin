@@ -166,20 +166,6 @@
 	}	
 	function uploaderimg(){
 		
-		if (str.match(re)!=null){
-			api.toast({
-				msg: '图片不允许中文名称',
-				duration: 5000,
-				location: 'bottom'
-			});
-		}else{
-			api.toast({
-				msg: '正常',
-				duration: 2000,
-				location: 'bottom'
-			});
-		}
-		return;
 		var img1=$api.byId('imglist');
 		var UIAlbumBrowser = api.require('UIAlbumBrowser');
 		UIAlbumBrowser.open({
