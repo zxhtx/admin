@@ -165,8 +165,6 @@
 		});
 	}	
 	function uploaderimg(){
-
-		
 		var img1=$api.byId('imglist');
 		var UIAlbumBrowser = api.require('UIAlbumBrowser');
 		UIAlbumBrowser.open({
@@ -209,6 +207,7 @@
 						// 把本地路径放在数组中
 						var strs=new Array();
 						var pat=/\//;
+						var pat2=/\./g;
 						// 在不同的系统中路径分隔不同 需要判断做处理拿到图片名(例如:123.png)
 						var line;
 
@@ -222,16 +221,26 @@
 							str=strs[strs.length-1];
 						}
 						// 正则中文判断
-						var re=/[\u0391-\uFFE5]+/g;
-						if (str.match(re)!=null){
+						if (str.match(pat2).length>1) {
 							api.toast({
-								msg: '图片不允许中文名称',
+								msg: '图片名称不规范',
 								duration: 2000,
 								location: 'bottom'
 							});
 							continue;
 						}else{
-							listimg.push(ret.list[i].path)	
+							var re=/[\u0391-\uFFE5]+/g;
+							if (str.match(re)!=null){
+								api.toast({
+									msg: '图片不允许中文名称',
+									duration: 2000,
+									location: 'bottom'
+								});
+								continue;
+							}else{
+								listimg.push(ret.list[i].path)	
+							}
+
 						}
 						
 					}
