@@ -1,358 +1,323 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
-	<title>title</title>
-	<link rel="stylesheet" type="text/css" href="../css/api.css" />
-	<style>
-	table.gridtable {
-		width: 100%;
-		/*font-family: verdana,arial,sans-serif;*/
-		font-size:11px;
-		color:black;
-		border-width: 1px;
-		border-color: #666666;
-		/*border-collapse: collapse;*/
-	}
-	table.gridtable th {
-		border-width: 1px;
-		padding: 8px;
-		/*border-style: solid;*/
-		border-color: #666666;
-		background-color: #dedede;
-	}
-	table.gridtable td {
-		border-width: 1px;
-		padding:6px 0 6px 0;
-		border-style: solid;
-		border-color: #666666;
-		background-color: #fff;
-	}
-	.red{
-		color: red;
-	}
-	input{
-		border: none;
-		outline: none;
-		outline:medium;
-		width: 100%;
-		height: 100%;
+	<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<style>
+		table.gridtable {
+			width: 100%;
+			/*font-family: verdana,arial,sans-serif;*/
+			font-size:11px;
+			color:black;
+			border-width: 1px;
+			border-color: #666666;
+			/*border-collapse: collapse;*/
+		}
+		table.gridtable th {
+			border-width: 1px;
+			padding: 8px;
+			/*border-style: solid;*/
+			border-color: #666666;
+			background-color: #dedede;
+		}
+		table.gridtable td {
+			border-width: 1px;
+			padding:6px 0 6px 0;
+			border-style: solid;
+			border-color: #666666;
+			background-color: #fff;
+		}
+		.red{
+			color: red;
+		}
+		input{
+			border: none;
+			outline: none;
+			outline:medium;
+			width: 100%;
+			height: 100%;
 
-	}
-	/*a:visited{color:red;} */
-	.imgcolor{
-		color: red;
-	}
-	.imglist{
-		width: 100px;
-		height: 100px;
-		display: inline-block;
-	}
-</style>
-</head>
-<body>
-	<table class="gridtable" id="list">
-		<tr>
-			<th>商品所属类</th>
-			<td>
-				<select id="test" tapmode onchange="select()" name="">
-					<option value="">请选择</option>
-					<option value="0">穿搭</option>
-					<option value="1">潮图</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<th>封面</th>
-			<td tapmode onclick="uploaderimg()">上传图片</td>
-			
-		</tr>
-		<tr>
-			<th>warelist</th>
-			<td tapmode onclick="addware()">添加warelist</td>
-			
-		</tr>
-		<tr>
-			<th></th>
-			<td></td>
+		}
+		/*a:visited{color:red;} */
+		.imgcolor{
+			color: red;
+		}
+		.imglist{
+			width: 100px;
+			height: 100px;
+			display: inline-block;
+		}
+		#text{
+			height: 20px;
+			font-size: 15px;
+			border: 0px;
+			outline: 0px;
+		}
+	</style>
+	</head>
+	<body>
+		<table class="gridtable" id="list">
+			<tr>
+				<th>商品所属类</th>
+				<td>
+					<select id="test" tapmode onchange="select()" name="">
+						<option value="">请选择</option>
+						<option value="0">穿搭</option>
+						<option value="1">潮图</option>
+					</select>
+				</td>
+			</tr>
 
-			
-		</tr>
-		<tr>
-			<th></th>
-			<td></td>
-			
-			
-		</tr>
-		<tr>
-			<th></th>
-			<td tapmode onclick="biu()">biu一下</td>
-			
-		</tr>
-		<tr>
-			<th></th>
-			<td></td>
-			
-			
-		</tr>
-		<tr>
-			<th></th>
-			<td></td>
-			
-			
-		</tr>
-		<tr>
-			<th>上传</th>	
-			<td class="red"><input type="button" value="上传" tapmode onclick="save()"></td>
-		</tr>
-	</table>
-	<div>
-		<div id="imglist"></div>
-		<br>
-		warelist:
-		<div id="warelist" style="word-wrap:break-word ;"></div>
-		<br>
-		rootware:
-		<div id="rootwarelist1" style="word-wrap:break-word ;"></div>
-	</div>
-	
-</body>
-<script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
-<script type="text/javascript" src="../script/api.js"></script>
-<script type="text/javascript" src="../script/SHA1.js"></script>
-<script type="text/javascript">
-	var addInfo={};
-	var wareInfoId;
-	var imglist=[];
-	var warelist=[];
-	var rootware=[];
-	var mydate=new Date();
-	var y=mydate.getFullYear();
-	var m=mydate.getMonth()+1;
-	var d=mydate.getDate();
-	var date=y+'-'+m+'-'+d;
-	var now = Date.now();
-	var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
-	apiready = function(){
-		event();
-		addInfo.date=date;
-	};
-	function select(){
-		var myselect=$api.byId("test");
-		var index=myselect.selectedIndex ;
-		addInfo.type=myselect.options[index].value;
-		// alert(addInfo.type)
+			<tr>
+				<th>说两句吧~~</th>
+				<td><textarea id="text" style="width:399px;height:120px;"></textarea></td>
 
-	}
-	function biu(){
-		rootware.push(warelist);
-		warelist=[];
-		var rootwarelist1=$api.byId('rootwarelist1');
-		rootwarelist1.innerHTML=rootware;
-		addInfo.warelist=rootware;
+			</tr>
 
-	}
-	function event(){
-		api.addEventListener({
-			name: 'addDressing'
-		}, function(ret, err){
-			if( ret ){
-				warelist=ret.value.key1;
-				var warelist1=$api.byId('warelist');
-				warelist1.innerHTML=warelist; 
-			}
-		});
-	}	
-	function uploaderimg(){
-		var img1=$api.byId('imglist');
-		var UIAlbumBrowser = api.require('UIAlbumBrowser');
-		UIAlbumBrowser.open({
-			max: 9,
-			styles: {
-				bg: '#fff',
-				mark: {
-					icon: '',
-					position: 'bottom_left',
-					size: 20
-				},
-				nav: {
-					bg: 'rgba(0,0,0,0.6)',
-					titleColor: '#fff',
-					titleSize: 18,
-					cancelColor: '#fff',
-					cancelSize: 16,
-					finishColor: '#fff',
-					finishSize: 16
+			<tr>
+				<th>上传</th>
+				<td class="red"><input type="button" value="上传" tapmode onclick="save()"></td>
+			</tr>
+		</table>
+		<div>
+			<div id="imglist" >
+			<div  tapmode onclick="uploaderimg()" style=" float: left; border: 1px solid black; width: 100px; height: 100px;">	<img  src="../image/add.png" style="width: 50px;margin-left:25px;margin-top: 25px;" alt=""></div>
+
+			</div>
+		</div>
+
+	</body>
+	<script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/SHA1.js"></script>
+	<script type="text/javascript">
+		var addInfo={};
+		var wareInfoId;
+		var listimg=[];
+		var warelist=[];
+		var rootware=[];
+		var mydate=new Date();
+		var y=mydate.getFullYear();
+		var m=mydate.getMonth()+1;
+		var d=mydate.getDate();
+		var obj={};
+		var date=y+'-'+m+'-'+d;
+		var now = Date.now();
+		var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+		apiready = function(){
+			event();
+			addInfo.date=date;
+		};
+		function select(){
+			var myselect=$api.byId("test");
+			var index=myselect.selectedIndex ;
+			addInfo.type=myselect.options[index].value;
+
+
+		}
+
+		function event(){
+			api.addEventListener({
+				name: 'addDressing'
+			}, function(ret, err){
+				if( ret ){
+					// warelist=ret.value.warelist;
+					// alert(ret.value.objname);
+					obj['z_'+ret.value.objname]=ret.value.warelist;
+					// alert(1);
+					// alert($api.jsonToStr( obj));
+					addInfo.wareobj=obj;
+					addInfo.userid='8';
+					// alert(ret.value.warelist)
+					// var warelist1=$api.byId('warelist');
+					// warelist1.innerHTML=warelist;
 				}
-			},
-			rotation: true
-		}, function(ret) {
-			if (ret) {
-				if (ret.list=='[]' || ret.list=='' || ret.list==undefined) {
-					api.toast({
-						msg: '未检测到图片路径',
-						duration: 2000,
-						location: 'bottom'
-					});
+			});
+		}
+		function uploaderimg(){
+			// var img1=$api.byId('imglist');
+			var UIAlbumBrowser = api.require('UIAlbumBrowser');
+			UIAlbumBrowser.open({
+				max: 9,
+				styles: {
+					bg: '#fff',
+					mark: {
+						icon: '',
+						position: 'bottom_left',
+						size: 20
+					},
+					nav: {
+						bg: 'rgba(0,0,0,0.6)',
+						titleColor: '#fff',
+						titleSize: 18,
+						cancelColor: '#fff',
+						cancelSize: 16,
+						finishColor: '#fff',
+						finishSize: 16
+					}
+				},
+				rotation: true
+			}, function(ret) {
+				if (ret) {
+					if (ret.list=='[]' || ret.list=='' || ret.list==undefined) {
+						api.toast({
+							msg: '未检测到图片路径',
+							duration: 2000,
+							location: 'bottom'
+						});
 
-				}else{
-					var img="<img class='imglist' src="+ret.list[0].path+">";
-					$api.append(img1,img);
-					// uploadAtavar(ret.list[0].path)
-					var listimg=[];
-					for (var i = 0; i <ret.list.length; i++) {
-						// 获取本地路径
-						var str=ret.list[i].path;
-						// 把本地路径放在数组中
-						var strs=new Array();
-						var pat=/\//;
-						var pat2=/\./g;
-						// 在不同的系统中路径分隔不同 需要判断做处理拿到图片名(例如:123.png)
-						var line;
+					}else{
 
-						line=str.match(pat);
-						// 判断正反斜杠 进行下一步图片名中文
-						if(line=='/'){
-							strs=str.split('/');
-							str=strs[strs.length-1];
-						}else{
-							strs=str.split('\\');
-							str=strs[strs.length-1];
-						}
-						// 正则中文判断
-						if (str.match(pat2).length>1) {
-							api.toast({
-								msg: '图片名称不规范',
-								duration: 2000,
-								location: 'bottom'
-							});
-							continue;
-						}else{
-							var re=/[\u0391-\uFFE5]+/g;
-							if (str.match(re)!=null){
+
+						// uploadAtavar(ret.list[0].path)
+
+						for (var i = 0; i <ret.list.length; i++) {
+							// 获取本地路径
+							var str=ret.list[i].path;
+							// 把本地路径放在数组中
+							var strs=new Array();
+							var pat=/\//;
+							var pat2=/\./g;
+							// 在不同的系统中路径分隔不同 需要判断做处理拿到图片名(例如:123.png)
+							var line;
+
+							line=str.match(pat);
+							// 判断正反斜杠 进行下一步图片名中文
+							if(line=='/'){
+								strs=str.split('/');
+								str=strs[strs.length-1];
+							}else{
+								strs=str.split('\\');
+								str=strs[strs.length-1];
+							}
+							// 正则小数点判断
+							if (str.match(pat2).length>1) {
 								api.toast({
-									msg: '图片不允许中文名称',
+									msg: '图片名称不规范',
 									duration: 2000,
 									location: 'bottom'
 								});
 								continue;
 							}else{
-								listimg.push(ret.list[i].path)	
+								// 正则中文判断
+								var re=/[\u0391-\uFFE5]+/g;
+								if (str.match(re)!=null){
+									api.toast({
+										msg: '图片不允许中文名称',
+										duration: 2000,
+										location: 'bottom'
+									});
+									continue;
+								}else{
+									var img="<img style='margin:3px;float: left;' class='imglist' data-value="+str+"  src="+ret.list[i].path+">";
+									// $api.append(img1,img);
+									$("#imglist").prepend(img);
+									listimg.push(ret.list[i].path)
+									addware();
+								}
+
 							}
 
 						}
-						
+
+
 					}
-					
-					
-					api.ajax({
-						url: 'http://api.chaodashe.com/index.php/moreimg',
-						method:'post',
-						dataType:'json',
-						data: {
-							files:{ 
-								"image[]":listimg
-							}
-						},
-					},function(ret, err){
-						// if (ret) {
-						// 	imglist.push(ret.url)
-						// 	addInfo.imglist=imglist;
-						// 	api.toast({
-						// 		msg: '图片上传成功',
-						// 		duration: 2000,
-						// 		location: 'bottom'
-						// 	});
-						// } 
-						// alert($api.jsonToStr(ret))
-						
-						// api.toast({
-						//     msg: ret,
-						//     duration: 2000,
-						//     location: 'bottom'
-						// });
-					});
-
-
 
 				}
-
-			}
-		});
+			});
 
 
 
 
 
-	}
-	function uploadAtavar(_data){
-		api.ajax({
-			url: 'https://d.apicloud.com/mcm/api/file',
-			method: 'post',
-			data: {
-				values: { 
-					filename: 'icon'
-				},
-				files: { 
-					file: _data
-				}
-			},
-			headers: {
-				"X-APICloud-AppId": "A6099267504667",
-				"X-APICloud-AppKey":   appKey,
-			},
-		},function(ret, err){
-			if (ret) {
-				imglist.push(ret.url)
-				addInfo.imglist=imglist;
-				api.toast({
-					msg: '图片上传成功',
-					duration: 2000,
-					location: 'bottom'
-				});
-			} 
-		});
-	}
+		}
 
-
-	function addware(){
-		api.openFrame({
-			name: 'warelist_frame',
-			url: './warelist_frame.html',
-			rect: {
-				x: 0,
-				y: 0,
-				w: api.winWidth,
-				h: api.winHeight
-			},
-
-		});
-
-	}
-	function save(){
-		api.ajax({
-			url: 'https://d.apicloud.com/mcm/api/Dressing',
-			method: 'post',
-			data: {
-				values:addInfo
-			},
-			headers: {
-				"X-APICloud-AppId": "A6099267504667",
-				"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
+		function addware(){
+			$(".imglist").on('click',function(e){
+				e.stopPropagation();
+				var src=$(this).attr('data-value');
+				src=src.split('.')[0];
+				src=src.replace(/\-|\@/g,'');
+				api.openFrame({
+					name: 'warelist_frame',
+					url: './warelist_frame.html',
+					rect: {
+						x: 0,
+						y: 0,
+						w: api.winWidth,
+						h: api.winHeight
 					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					} 
+					pageParam: {
+						objname: src
+					}
+
 				});
 
-	}
+			});
 
-</script>
-</html>
+
+		}
+		function save(){
+	// alert($api.jsonToStr(addInfo));
+	addInfo.text=$api.byId('text').value;
+
+			api.ajax({
+				url: 'http://api.chaodashe.com/index.php/moreimg',
+				method: 'post',
+				data: {
+					values:addInfo,
+					files:{
+						"image[]":listimg
+					},
+				},
+				report:true,
+				},function(ret, err){
+					// alert($api.jsonToStr(ret))
+				
+
+					var UIActionProgress = api.require('UIActionProgress');
+	 				UIActionProgress.open({
+	   		 	 maskBg: 'rgba(0,0,0,0.5)',
+	   			  styles: {
+	         h: 108,
+	         bg: '#fff',
+	         title: {
+	             size: 13,
+	             color: '#000',
+	             marginT: 10
+	         },
+	         msg: {
+	             size: 12,
+	             color: '#000',
+	             marginT: 5
+	         },
+	         lable: {
+	             size: 12,
+	             color: '#696969',
+	             marginB: 5
+	         },
+	         progressBar: {
+	             size: 2,
+	             normal: '#000',
+	             active: '#4876FF',
+	             marginB: 35,
+	             margin: 5
+	         }
+	    	 },
+	    	 data: {
+	         title: '正在更新',
+	         msg: '说明',
+	         value: ret.progress,
+	    	 }
+	 		},function(ret){
+	 	    api.alert({msg:JSON.stringify(ret)});
+	 		});
+
+			});
+			
+		}
+
+	</script>
+	</html>
