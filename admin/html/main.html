@@ -140,6 +140,7 @@
 		<div tapmode onclick="selectuser()" class="selectuser">查询用户</div>
 		<div tapmode onclick="del()" class="del">删除商品</div>
 		<div tapmode onclick="gonggao()" class="gonggao">主页公告</div>
+		<div tapmode onclick="gomusic()" class="gonggao">音乐</div>
 	</section>
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
@@ -210,6 +211,16 @@
 				name: 'test'
 			}
 		});
+	}
+	function gomusic(){
+		var selectFile = api.require('selectFile');
+		selectFile.open(function(ret, err){
+    if(ret.status){
+        alert(JSON.stringify(ret.path));
+    }else{
+        alert('选择文件不存在');
+    }
+});
 	}
 </script>
 </html>

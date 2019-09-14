@@ -7,7 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="../css/api.css" />
 		<style>
 		table.gridtable {
-			width: 100%;
+			/*width: 100%;*/
 			/*font-family: verdana,arial,sans-serif;*/
 			font-size:11px;
 			color:black;
@@ -45,9 +45,11 @@
 			color: red;
 		}
 		.imglist{
-			width: 100px;
-			height: 100px;
+			width: 112px;
+			height: 112px;
 			display: inline-block;
+			background-size:cover ;
+			background-position:center center;
 		}
 		#text{
 			height: 20px;
@@ -66,6 +68,17 @@
 						<option value="">请选择</option>
 						<option value="0">穿搭</option>
 						<option value="1">潮图</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>显示图片的类型</th>
+				<td>
+					<select id="test1" tapmode onchange="select2()" name="">
+						<option value="">请选择</option>
+						<option value="0">轮播</option>
+						<option value="1">长图</option>
+						
 					</select>
 				</td>
 			</tr>
@@ -106,6 +119,7 @@
 		var date=y+'-'+m+'-'+d;
 		var now = Date.now();
 		var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+		var UIActionProgress;
 		apiready = function(){
 			event();
 			addInfo.date=date;
@@ -116,6 +130,12 @@
 			addInfo.type=myselect.options[index].value;
 
 
+		}
+		function select2() {
+			var myselect=$api.byId("test1");
+			var index=myselect.selectedIndex ;
+			addInfo.showimgtype=myselect.options[index].value;
+			
 		}
 
 		function event(){
@@ -129,7 +149,7 @@
 					// alert(1);
 					// alert($api.jsonToStr( obj));
 					addInfo.wareobj=obj;
-					addInfo.userid='8';
+				
 					// alert(ret.value.warelist)
 					// var warelist1=$api.byId('warelist');
 					// warelist1.innerHTML=warelist;
@@ -140,7 +160,7 @@
 			// var img1=$api.byId('imglist');
 			var UIAlbumBrowser = api.require('UIAlbumBrowser');
 			UIAlbumBrowser.open({
-				max: 9,
+				max: 8,
 				styles: {
 					bg: '#fff',
 					mark: {
@@ -174,6 +194,12 @@
 						// uploadAtavar(ret.list[0].path)
 
 						for (var i = 0; i <ret.list.length; i++) {
+							if (ret.list[i].path.match(/\#|\:|\*|\?/g)){
+								api.toast({
+								    msg: '图片名称不能存在特殊字符'
+								});
+								continue;
+							}
 							// 获取本地路径
 							var str=ret.list[i].path;
 							// 把本地路径放在数组中
@@ -211,7 +237,7 @@
 									});
 									continue;
 								}else{
-									var img="<img style='margin:3px;float: left;' class='imglist' data-value="+str+"  src="+ret.list[i].path+">";
+									var img="<div style=margin:3px;float:left;background-image:url('"+ret.list[i].path+"'); class='imglist' data-value="+str+"  ></div>";
 									// $api.append(img1,img);
 									$("#imglist").prepend(img);
 									listimg.push(ret.list[i].path)
@@ -239,7 +265,7 @@
 				e.stopPropagation();
 				var src=$(this).attr('data-value');
 				src=src.split('.')[0];
-				src=src.replace(/\-|\@/g,'');
+				src=src.replace(/\-|\@|\=|\+|\~|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\?|\{|\}|\:|\;|\'|\"|\/|\<|\>|\[|\]/g,'');
 				api.openFrame({
 					name: 'warelist_frame',
 					url: './warelist_frame.html',
@@ -260,9 +286,12 @@
 
 		}
 		function save(){
-	// alert($api.jsonToStr(addInfo));
-	addInfo.text=$api.byId('text').value;
-
+		 UIActionProgress = api.require('UIActionProgress');
+			openload();
+			var text=$api.byId('text').value;
+			var des = text.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
+			addInfo.text=des;
+			addInfo.userid='8';
 			api.ajax({
 				url: 'http://api.chaodashe.com/index.php/moreimg',
 				method: 'post',
@@ -275,12 +304,31 @@
 				report:true,
 				},function(ret, err){
 					// alert($api.jsonToStr(ret))
+					
+						UIActionProgress.setData({
+				 		data: {
+				     	title: '正在上传...',
+				     	// msg: '进度',
+				   	  	value: ret.progress
+					 }
+					});
+						UIActionProgress.getValue(function(ret){
+  						// alert(ret.value);
+  						if (ret.value=='100') {
+  							UIActionProgress.close();
+  						}
+					});
 				
+					
+			});
+			
+		}
 
-					var UIActionProgress = api.require('UIActionProgress');
-	 				UIActionProgress.open({
-	   		 	 maskBg: 'rgba(0,0,0,0.5)',
-	   			  styles: {
+		function openload(argument) {
+		
+	 		UIActionProgress.open({
+	   		  maskBg: 'rgba(0,0,0,0.5)',
+	   		styles: {
 	         h: 108,
 	         bg: '#fff',
 	         title: {
@@ -300,23 +348,20 @@
 	         },
 	         progressBar: {
 	             size: 2,
-	             normal: '#000',
-	             active: '#4876FF',
+	             normal: '#7B7B7B',
+	             active: '#000',
 	             marginB: 35,
 	             margin: 5
 	         }
 	    	 },
 	    	 data: {
-	         title: '正在更新',
-	         msg: '说明',
-	         value: ret.progress,
+	         title: '正在上传...',
+	         value:0,
 	    	 }
 	 		},function(ret){
-	 	    api.alert({msg:JSON.stringify(ret)});
+	 	    // api.alert({msg:JSON.stringify(ret)});
 	 		});
 
-			});
-			
 		}
 
 	</script>
