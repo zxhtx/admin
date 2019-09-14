@@ -93,6 +93,10 @@
 				<th>上传</th>
 				<td class="red"><input type="button" value="上传" tapmode onclick="save()"></td>
 			</tr>
+			<tr>
+				<th>音乐</th>
+				<td><input type="button" name="" value="音乐" tapmode onclick="music()" ></td>
+			</tr>
 		</table>
 		<div>
 			<div id="imglist" >
@@ -106,6 +110,7 @@
 	<script type="text/javascript" src="../script/api.js"></script>
 	<script type="text/javascript" src="../script/SHA1.js"></script>
 	<script type="text/javascript">
+		var music;
 		var addInfo={};
 		var wareInfoId;
 		var listimg=[];
@@ -259,7 +264,17 @@
 
 
 		}
-
+		function music(){
+			var selectFile = api.require('selectFile');
+		selectFile.open(function(ret, err){
+   		 if(ret.status){
+   		 	music=ret.path;
+        	alert(JSON.stringify(ret.path));
+    	}else{
+        	alert('选择文件不存在');
+    	}
+});
+		}
 		function addware(){
 			$(".imglist").on('click',function(e){
 				e.stopPropagation();
@@ -298,7 +313,8 @@
 				data: {
 					values:addInfo,
 					files:{
-						"image[]":listimg
+						"image[]":listimg,
+						"music":music
 					},
 				},
 				report:true,
