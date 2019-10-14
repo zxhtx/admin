@@ -44,7 +44,7 @@
 		.imgcolor{
 			color: red;
 		}
-		.imglist{
+		#backgroundimage{
 			width: 112px;
 			height: 112px;
 			display: inline-block;
@@ -95,7 +95,7 @@
 			</tr>
 			<tr>
 				<th>音乐</th>
-				<td><input type="button" name="" value="音乐" tapmode onclick="music()" ></td>
+				<td><input type="button" name="" value="音乐" tapmode onclick="gomusic()" ></td>
 			</tr>
 		</table>
 		<div>
@@ -121,6 +121,7 @@
 		var m=mydate.getMonth()+1;
 		var d=mydate.getDate();
 		var obj={};
+		var listimgname={};
 		var date=y+'-'+m+'-'+d;
 		var now = Date.now();
 		var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
@@ -242,17 +243,26 @@
 									});
 									continue;
 								}else{
-									var img="<div style=margin:3px;float:left;background-image:url('"+ret.list[i].path+"'); class='imglist' data-value="+str+"  ></div>";
+									var clsname=mydate.getTime()+Math.round(Math.random()*99999999);
+									var imgname=mydate.getTime()+Math.round(Math.random()*9999999);
+									var img="<div style=margin:3px;float:left;background-image:url('"+ret.list[i].path+"'); id='backgroundimage' class=imglist_"+clsname+"  data-wareobjname="+imgname+"  data-value="+str+"  ></div>";
 									// $api.append(img1,img);
+
 									$("#imglist").prepend(img);
-									listimg.push(ret.list[i].path)
+									listimg.push(ret.list[i].path);
+									
+									var src=$('.imglist_'+clsname).attr('data-value');
+									src=src.split('.')[0];
+									src=src.replace(/\-|\@|\=|\+|\~|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\?|\{|\}|\:|\;|\'|\"|\/|\<|\>|\[|\]/g,'');
+									listimgname['z_'+src]='z_'+imgname;
+														
 									addware();
 								}
 
 							}
 
 						}
-
+					addInfo.listimgname=JSON.stringify(listimgname);
 
 					}
 
@@ -263,24 +273,35 @@
 
 
 
+
 		}
-		function music(){
+		function gomusic(){
 			var selectFile = api.require('selectFile');
 		selectFile.open(function(ret, err){
    		 if(ret.status){
-   		 	music=ret.path;
-        	alert(JSON.stringify(ret.path));
+   		 	var dian=/\./g;
+   		 	var path=ret.path;
+   		 	if (path.match(dian).length>1) {
+   		 		api.toast({
+   		 		    msg:'音乐文件名不规范',
+   		 		    duration: 2000,
+					location: 'bottom'
+
+   		 		});
+   		 	}else{
+   		 		music=ret.path;
+   		 	}
+   		 	
+        	// alert(JSON.stringify(ret.path));
     	}else{
         	alert('选择文件不存在');
     	}
-});
-		}
+		});
+	}
 		function addware(){
-			$(".imglist").on('click',function(e){
+			$("#backgroundimage").on('click',function(e){
 				e.stopPropagation();
-				var src=$(this).attr('data-value');
-				src=src.split('.')[0];
-				src=src.replace(/\-|\@|\=|\+|\~|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\?|\{|\}|\:|\;|\'|\"|\/|\<|\>|\[|\]/g,'');
+				var wareobjname=$(this).attr('data-wareobjname');
 				api.openFrame({
 					name: 'warelist_frame',
 					url: './warelist_frame.html',
@@ -291,7 +312,7 @@
 						h: api.winHeight
 					},
 					pageParam: {
-						objname: src
+						objname: wareobjname
 					}
 
 				});
@@ -301,6 +322,7 @@
 
 		}
 		function save(){
+			
 		 UIActionProgress = api.require('UIActionProgress');
 			openload();
 			var text=$api.byId('text').value;
@@ -308,7 +330,7 @@
 			addInfo.text=des;
 			addInfo.userid='8';
 			api.ajax({
-				url: 'http://api.chaodashe.com/index.php/moreimg',
+				url: 'https://api.chaodashe.com/index.php/moreimg',
 				method: 'post',
 				data: {
 					values:addInfo,
