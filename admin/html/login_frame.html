@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>登录Frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+      <script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script>
+    <style>
+    body {
+        text-align: center;
+    }
+    
+    .row {
+        width: auto;
+        height: 70px;
+        box-sizing: border-box;
+        margin-left: 32px;
+        margin-right: 32px;
+        padding-top: 40px;
+        border-bottom: 1px solid #888;
+    }
+    
+    .input {
+        width: 100%;
+        height: 20px;
+        border: none;
+        font-size: 16px;
+        line-height: 20px;
+        outline: 0;
+        border: 0px;
+    }
+    
+    .btn {
+        width: auto;
+        height: 50px;
+        margin-left: 32px;
+        margin-right: 32px;
+        margin-top: 50px;
+        background-color:black ;
+        line-height: 50px;
+        color: white;
+        font-size: 16px;
+        text-align: center;
+        border-radius: 8px;
+    }
+
+    
+    .highlight {
+        opacity: 0.7;
+    }
+</style>
+</head>
+
+<body>
+    <div class="row">
+        <input id="username" class="input" type="text" placeholder="用户名">
+    </div>
+    <div class="row">
+        <input id="password" class="input" type="password" placeholder="密码">
+    </div>
+    <div class="btn" tapmode onclick="Login()">登录</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/SHA1.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+
+
+    };
+    function Login(){
+      var username=$api.byId('username');
+      var password=$api.byId('password');
+      var usernameValue=username.value;
+      var passwordValue=password.value;
+      var now = Date.now();
+     
+      if (usernameValue=='') {
+        api.toast({
+            msg:'用户名不能为空',
+            duration: 2000,
+            location: 'bottom'
+        });
+        return;
+        
+    }else if(passwordValue==''){
+      api.toast({
+        msg:'密码不能为空',
+        duration: 2000,
+        location: 'bottom'
+    });
+      return;
+  }else{
+
+  }
+
+      var  values={ 
+        'username': usernameValue,
+        'pwd':md5(passwordValue)
+      };
+
+    $.ajax({
+    type: 'post',
+    url: 'https://api.chaodashe.com/index.php/login',
+    dataType: 'json',
+    data: values,
+    success: function (data) {
+       $api.setStorage('userInfo', data.data);
+            api.toast({
+                msg: '登录成功',
+                duration: 2000,
+                location: 'bottom'
+            });
+            api.sendEvent({
+                name: 'login',
+            });
+            setTimeout(function(){
+                api.closeWin();
+            },2000);
+    },
+    error: function (data) {
+      api.toast({
+          msg: '账号或密码错误'
+      });
+    },
+  });
+ 
+}
+function setUserName(_username){
+    var username=$api.byId('username');
+        // username.value=_username
+        $api.val(username,_username);
+
+    }
+</script>
+
+</html>

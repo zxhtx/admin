@@ -328,9 +328,9 @@
 			var text=$api.byId('text').value;
 			var des = text.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
 			addInfo.text=des;
-			addInfo.userid='8';
+			addInfo.userid=userInfo.id;
 			api.ajax({
-				url: 'https://api.chaodashe.com/index.php/moreimg',
+				url: 'https://api.chaodashe.com:443/index.php/moreimg',
 				method: 'post',
 				data: {
 					values:addInfo,
@@ -341,7 +341,7 @@
 				},
 				report:true,
 				},function(ret, err){
-					// alert($api.jsonToStr(ret))
+					
 					
 						UIActionProgress.setData({
 				 		data: {
