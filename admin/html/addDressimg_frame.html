@@ -281,9 +281,11 @@
 
 		}
 		function gomusic(){
-			var audioPlayer = api.require('audioPlayer');
-audioPlayer.scanAudioLibrary(function(ret) {
-    api.alert({ msg: JSON.stringify(ret) });
+			var fileBrowser = api.require('fileBrowser');
+fileBrowser.open(function(ret) {
+    if (ret) {
+        alert(JSON.stringify(ret));
+    }
 });
 			// $('#file').click();
 		// 	var selectFile = api.require('selectFile');
