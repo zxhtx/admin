@@ -104,6 +104,7 @@
 
 			</div>
 		</div>
+		<input type="file" name="music" id="file" accept="audio/*" style="display: none;">
 
 	</body>
 	<script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
@@ -111,6 +112,7 @@
 	<script type="text/javascript" src="../script/SHA1.js"></script>
 	<script type="text/javascript">
 		var music;
+		var formdata;
 		var addInfo={};
 		var wareInfoId;
 		var listimg=[];
@@ -126,9 +128,12 @@
 		var now = Date.now();
 		var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
 		var UIActionProgress;
+		var userInfo;
 		apiready = function(){
 			event();
 			addInfo.date=date;
+			userInfo=$api.getStorage('userInfo');
+			// alert(userInfo.id)
 		};
 		function select(){
 			var myselect=$api.byId("test");
@@ -276,28 +281,35 @@
 
 		}
 		function gomusic(){
-			var selectFile = api.require('selectFile');
-		selectFile.open(function(ret, err){
-   		 if(ret.status){
-   		 	var dian=/\./g;
-   		 	var path=ret.path;
-   		 	if (path.match(dian).length>1) {
-   		 		api.toast({
-   		 		    msg:'音乐文件名不规范',
-   		 		    duration: 2000,
-					location: 'bottom'
+			var audioPlayer = api.require('audioPlayer');
+audioPlayer.scanAudioLibrary(function(ret) {
+    api.alert({ msg: JSON.stringify(ret) });
+});
+			// $('#file').click();
+		// 	var selectFile = api.require('selectFile');
+		// selectFile.open(function(ret, err){
+  //  		 if(ret.status){
+  //  		 	var dian=/\./g;
+  //  		 	var path=ret.path;
+		// 	alert(path);
+  //  		 	if (path.match(dian).length>1) {
+  //  		 		api.toast({
+  //  		 		    msg:'音乐文件名不规范',
+  //  		 		    duration: 2000,
+		// 			location: 'bottom'
 
-   		 		});
-   		 	}else{
-   		 		music=ret.path;
-   		 	}
+  //  		 		});
+  //  		 	}else{
+  //  		 		music=ret.path;
+  //  		 	}
    		 	
-        	// alert(JSON.stringify(ret.path));
-    	}else{
-        	alert('选择文件不存在');
-    	}
-		});
+  //       	// alert(JSON.stringify(ret.path));
+  //   	}else{
+  //       	alert('选择文件不存在');
+  //   	}
+		// });
 	}
+
 		function addware(){
 			$("#backgroundimage").on('click',function(e){
 				e.stopPropagation();

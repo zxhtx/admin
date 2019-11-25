@@ -188,6 +188,7 @@
 
 	function getuser(){
 		var userInfo=$api.getStorage('userInfo');
+		// alert(userInfo.id);
 		api.setScreenOrientation({orientation:"auto"});
 		if(userInfo){
 			$('.login').html(userInfo.name);
