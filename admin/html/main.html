@@ -193,6 +193,17 @@
 		if(userInfo){
 			$('.login').html(userInfo.name);
 			$('.loginout').css('display','');
+			var socketManager = api.require('socketManager');
+socketManager.createSocket({
+    host: 'ws://socket.chaodashe.com',
+    port: 8282
+}, function(ret, err) {
+    if (ret) {
+        alert(JSON.stringify(ret));
+    } else {
+        alert(JSON.stringify(err));
+    }
+});
 		}else{
 			$('.login').html('登录');
 			$('.loginout').css('display','none');

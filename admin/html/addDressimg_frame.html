@@ -104,7 +104,6 @@
 
 			</div>
 		</div>
-		<input type="file" name="music" id="file" accept="audio/*" style="display: none;">
 
 	</body>
 	<script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
@@ -112,7 +111,6 @@
 	<script type="text/javascript" src="../script/SHA1.js"></script>
 	<script type="text/javascript">
 		var music;
-		var formdata;
 		var addInfo={};
 		var wareInfoId;
 		var listimg=[];
@@ -284,7 +282,20 @@
 			var fileBrowser = api.require('fileBrowser');
 fileBrowser.open(function(ret) {
     if (ret) {
-        alert(JSON.stringify(ret));
+        // alert(JSON.stringify(ret));
+        var dian=/\./g;
+   		 	var path=ret.url;
+			// alert(path);
+   		 	if (path.match(dian).length>1) {
+   		 		api.toast({
+   		 		    msg:'音乐文件名不规范',
+   		 		    duration: 2000,
+					location: 'bottom'
+
+   		 		});
+   		 	}else{
+   		 		music=ret.url;
+   		 	}
     }
 });
 			// $('#file').click();
