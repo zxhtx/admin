@@ -44,6 +44,13 @@
 	.imgcolor{
 		color: red;
 	}
+	#backgroundimage{
+			width: 112px;
+			height: 112px;
+			display: inline-block;
+			background-size:cover ;
+			background-position:center center;
+		}
 </style>
 </head>
 <body>
@@ -63,10 +70,6 @@
 					<option value="5d0b369cb2d5c22418ad7a49">配件</option>
 				</select>
 			</td>
-		</tr>
-		<tr>
-			<th>商品名</th>
-			<td><input type="text" id="name"></td>
 		</tr>
 		<tr>
 			<th>介绍</th>
@@ -118,6 +121,7 @@
 	var addInfo={};
 	var wareInfoId;
 	var listimg = [];
+	var mydate = new Date();
 	apiready = function(){
 
 	};
@@ -152,6 +156,7 @@
 		var color=$api.byId('color').value;
 		var arrcolor=color.split("-");
 		 addInfo.color=arrcolor.toString()
+		 save();
 	}
 
 
@@ -179,6 +184,7 @@
 				},
 				rotation: true
 			}, function(ret) {
+				// alert($api.jsonToStr(ret))
 				if (ret) {
 					if (ret.list == '[]' || ret.list == '' || ret.list == undefined) {
 						api.toast({
@@ -188,35 +194,36 @@
 						});
 
 					} else {
-					
+							// alert(ret.list.length)
 							for (var i = 0; i < ret.list.length; i++) {
 								var clsname = mydate.getTime() + Math.round(Math.random() * 99999999);
 								var imgname = mydate.getTime() + Math.round(Math.random() * 9999999);
-								var img = "<div style=margin:3px;float:left;background-image:url('" + ret.list[i].path +
-									"'); id='backgroundimage' class=imglist_" + clsname + "  data-wareobjname=" + imgname + "  data-value=" +
-									str + "  ></div>";
+								// alert(1)
+								var img = "<div style=margin:3px;float:left;background-image:url('" + ret.list[i].path +"'); id='backgroundimage' class=imglist_" + clsname + "  data-wareobjname=" + imgname + "></div>";
 								// $api.append(img1,img);
-
+								// alert($api.jsonToStr(img))
 								$("#imglist").prepend(img);
 								listimg.push(ret.list[i].path);
 							}
 						}
-
+						// alert($api.jsonToStr(listimg))
 				}
 			});
 
 		}
 
   function save(){
-  			 var price=$api.byId('price').value;
-		     var jieshao=$api.byId('jieshao').value;
-		     var shangjia=$api.byId('shangjia').value;
+  			 // var price=$api.byId('price').value;
+		     // var jieshao=$api.byId('jieshao').value;
+		     // var shangjia=$api.byId('shangjia').value;
 			 // var des = text.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
-			addInfo.text = $api.byId('text').value;
+			// addInfo.text = $api.byId('jieshao').value;
 			addInfo.price=$api.byId('price').value;
 			addInfo.description=$api.byId('jieshao').value;
 			addInfo.shangjia=$api.byId('shangjia').value;
 			// addInfo.userid = userInfo.id;
+			// alert(1)
+			// return;
 			api.ajax({
 				url: 'http://api.chaodashe.com/index.php/addware',
 				method: 'post',
@@ -230,7 +237,7 @@
 			}, function(ret, err) {
 
 
-
+				alert($api.jsonToStr(ret))
 			});
   }
 </script>
