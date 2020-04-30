@@ -98,54 +98,26 @@
 
 		</tr>
 		<tr>
-			<th>封面</th>
-			<td tapmode onclick="uploaderimg(6,this)">上传图片</td>
-			
-
-		</tr>
-		
-		<tr>
-			<th>轮播图0</th>
-			<td tapmode onclick="uploaderimg(0,this)">上传图片</td>
-			
-
-		</tr>
-		<tr>
-			<th>轮播图1</th>
-			<td tapmode onclick="uploaderimg(1,this)">上传图片</td>
-
-		</tr>
-		
-		<tr>
-			<th>轮播图2</th>
-			<td tapmode onclick="uploaderimg(2,this)">上传图片</td>
-			
-		</tr>
-		<tr>
-			<th>轮播图3</th>
-			<td tapmode onclick="uploaderimg(3,this)">上传图片</td>
-
-		</tr>
-		<tr>
-			<th>轮播图4</th>
-			<td tapmode onclick="uploaderimg(4,this)">上传图片</td>
-			
-		</tr>
-		
-		<tr>
 			<th>上传</th>	
-			<td class="red"><input type="button" value="上传" tapmode onclick="save()"></td>
+			<td class="red"><input type="button" value="上传" tapmode onclick="uploadAtavar()"></td>
 		</tr>
 	</table>
+		<div>
+			<div id="imglist">
+				<div tapmode onclick="uploaderimg()" style=" float: left; border: 1px solid black; width: 100px; height: 100px;">
+					<img src="../image/add.png" style="width: 50px;margin-left:25px;margin-top: 25px;" alt=""></div>
+
+			</div>
+		</div>
 
 </body>
+<script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/SHA1.js"></script>
 <script type="text/javascript">
 	var addInfo={};
 	var wareInfoId;
-	var now = Date.now();
-	var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now;
+	var listimg = [];
 	apiready = function(){
 
 	};
@@ -155,55 +127,9 @@
 		addInfo.wareTypeId=myselect.options[index].value;
 
 	}
-	function uploaderimg(_data,_this){
-		$api.addCls(_this, 'imgcolor');
-		var UIAlbumBrowser = api.require('UIAlbumBrowser');
-		UIAlbumBrowser.open({
-			max: 9,
-			styles: {
-				bg: '#fff',
-				mark: {
-					icon: '',
-					position: 'bottom_left',
-					size: 20
-				},
-				nav: {
-					bg: 'rgba(0,0,0,0.6)',
-					titleColor: '#fff',
-					titleSize: 18,
-					cancelColor: '#fff',
-					cancelSize: 16,
-					finishColor: '#fff',
-					finishSize: 16
-				}
-			},
-			rotation: true
-		}, function(ret) {
-			if (ret) {
-				if (ret.list=='[]' || ret.list=='' || ret.list==undefined) {
-					api.toast({
-						msg: '未检测到图片路径',
-						duration: 2000,
-						location: 'bottom'
-					});
-
-				}else{
-					uploadAtavar(ret.list[0].path,_data);
-				}
-
-			}
-		});
-
-
-		
-		
-
-	}
+	
 	function uploadAtavar(_data,number){
-		var name=$api.byId('name').value;
-		var price=$api.byId('price').value;
-		var jieshao=$api.byId('jieshao').value;
-		var  shangjia=$api.byId('shangjia').value;
+		
 
 		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
 			var size=$api.byId('size').value;
@@ -215,204 +141,97 @@
 				addarr.push(i);
 			};
 
+            addInfo.size=addarr.toString();
 		}else {
 			var size=$api.byId('size').value;
 			var addarr=size.split("-");
 
+			addInfo.size=addarr.toString();
 		}
 
 		var color=$api.byId('color').value;
 		var arrcolor=color.split("-");
-
-
-
-
-		api.ajax({
-			url: 'https://d.apicloud.com/mcm/api/file',
-			method: 'post',
-			data: {
-				values: { 
-					filename: 'icon'
-				},
-				files: { 
-					file: _data
-				}
-			},
-			headers: {
-				"X-APICloud-AppId": "A6099267504667",
-				"X-APICloud-AppKey":   appKey,
-			},
-		},function(ret, err){
-			if (ret) {
-				// alert($api.jsonToStr(ret))
-				if (number==6) {
-					addInfo.thumbnail=ret.url;
-				}
-
-				addInfo.name=name;
-				addInfo.price=price;
-				addInfo.description=jieshao;
-				addInfo.size=addarr;
-				addInfo.color=arrcolor;
-				addInfo.shangjia=shangjia;
-				uploaderimgs(ret,number)
-			} else {
-				api.toast({
-					msg: err.msg,
-					duration: 2000,
-					location: 'bottom'
-				});
-			}
-		});
+		 addInfo.color=arrcolor.toString()
 	}
 
-	function uploaderimgs(_data,number){
-		if (number==0) {
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo',
-				method: 'post',
-				data: {
-					values: { 
-						picture0:_data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						wareInfoId=ret.id;
-						addInfo.wareInfo=ret.id;
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					} 
-				});
-		}else if (number==1){
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo/'+wareInfoId,
-				method: 'put',
-				data: {
-					values: { 
-						picture1: _data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					}
-				});
-		}else if (number==2){
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo/'+wareInfoId,
-				method: 'put',
-				data: {
-					values: { 
-						picture2: _data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					}
-				});
-		}else if (number==3){
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo/'+wareInfoId,
-				method: 'put',
-				data: {
-					values: { 
-						picture3: _data.url
-					}
-				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					}
-				});
 
-		}else{
-			api.ajax({
-				url: 'https://d.apicloud.com/mcm/api/wareInfo/'+wareInfoId,
-				method: 'put',
-				data: {
-					values: { 
-						picture4: _data.url
+	function uploaderimg() {
+			// var img1=$api.byId('imglist');
+			var UIAlbumBrowser = api.require('UIAlbumBrowser');
+			UIAlbumBrowser.open({
+				max: 8,
+				styles: {
+					bg: '#fff',
+					mark: {
+						icon: '',
+						position: 'bottom_left',
+						size: 20
+					},
+					nav: {
+						bg: 'rgba(0,0,0,0.6)',
+						titleColor: '#fff',
+						titleSize: 18,
+						cancelColor: '#fff',
+						cancelSize: 16,
+						finishColor: '#fff',
+						finishSize: 16
 					}
 				},
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
-					},
-				},function(ret, err){
-					if (ret) {
+				rotation: true
+			}, function(ret) {
+				if (ret) {
+					if (ret.list == '[]' || ret.list == '' || ret.list == undefined) {
 						api.toast({
-							msg: '上传成功',
+							msg: '未检测到图片路径',
 							duration: 2000,
 							location: 'bottom'
 						});
-					}
-				});
+
+					} else {
+					
+							for (var i = 0; i < ret.list.length; i++) {
+								var clsname = mydate.getTime() + Math.round(Math.random() * 99999999);
+								var imgname = mydate.getTime() + Math.round(Math.random() * 9999999);
+								var img = "<div style=margin:3px;float:left;background-image:url('" + ret.list[i].path +
+									"'); id='backgroundimage' class=imglist_" + clsname + "  data-wareobjname=" + imgname + "  data-value=" +
+									str + "  ></div>";
+								// $api.append(img1,img);
+
+								$("#imglist").prepend(img);
+								listimg.push(ret.list[i].path);
+							}
+						}
+
+				}
+			});
 
 		}
 
-	}
-
-	function save(){
-		api.ajax({
-			url: 'https://d.apicloud.com/mcm/api/ware',
-			method: 'post',
-			data: {
-				values:addInfo
-			},
-			headers: {
-				"X-APICloud-AppId": "A6099267504667",
-				"X-APICloud-AppKey":   appKey,
-					 // "Authorization": "5c1391e410a053b34b94d3ae"
+  function save(){
+  			 var price=$api.byId('price').value;
+		     var jieshao=$api.byId('jieshao').value;
+		     var shangjia=$api.byId('shangjia').value;
+			 // var des = text.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
+			addInfo.text = $api.byId('text').value;
+			addInfo.price=$api.byId('price').value;
+			addInfo.description=$api.byId('jieshao').value;
+			addInfo.shangjia=$api.byId('shangjia').value;
+			// addInfo.userid = userInfo.id;
+			api.ajax({
+				url: 'http://api.chaodashe.com/index.php/addware',
+				method: 'post',
+				data: {
+					values: addInfo,
+					files: {
+						"image[]": listimg,
 					},
-				},function(ret, err){
-					if (ret) {
-						api.toast({
-							msg: '上传成功',
-							duration: 2000,
-							location: 'bottom'
-						});
-					} 
-				});
+				},
+				report: true,
+			}, function(ret, err) {
 
-	}
 
+
+			});
+  }
 </script>
 </html>
