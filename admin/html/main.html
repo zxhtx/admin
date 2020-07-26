@@ -172,7 +172,7 @@
 <script type="text/javascript">
 	apiready = function(){
 		addevent();
-		getuser()
+		getuser();
 		
 	};
 
@@ -259,12 +259,26 @@
 		});
 	}
 	function gonggao(){
-		api.openWin({
-			name: 'gonggao.html',
-			url: './gonggao.html',
-			pageParam: {
-				name: 'test'
-			}
+		// api.openWin({
+		// 	name: 'gonggao.html',
+		// 	url: './gonggao.html',
+		// 	pageParam: {
+		// 		name: 'test'
+		// 	}
+		// });
+		api.openFrame({
+		    name: 'warelist_frame',
+		    url: 'warelist_frame.html',
+		    rect: {
+		        x: 0,
+		        y: 0,
+		        w: 'auto',
+		        h: 'auto'
+		    },
+		    pageParam: {
+		        name: 'value'
+		    },
+		    bounces: true
 		});
 	}
 	function gomusic(){
@@ -291,6 +305,7 @@
 		 api.clearCache(function(){
     });
 	$api.rmStorage('userInfo');
+	$api.rmStorage('token');
     api.toast({
        msg: '注销成功',
        duration: 2000,

@@ -146,11 +146,10 @@ section {
 
 <script type="text/template" id="template">
    {{~it:value:index}}
-   <div class="ware ware-1"  data-select='0' tapmode onclick="sele(this,'{{=value.id}}')"  >
+   <div class="ware ware-1"  data-select='0' tapmode onclick="sele(this,'{{=value.bid}}')"  >
     <div class="content" >
-        <img class="thumbnail" src="{{=value.thumbnail}}">
+        <img class="thumbnail" src="{{=value.image}}">
         <div class="info" >
-          <div class="name">{{=value.name}}</div>
           <div class="description">{{=value.description}}</div>
           <div class="price-tag">
            <span class="price">￥{{=value.price}}</span>
@@ -237,30 +236,25 @@ function ok(){
         skip=0;
     }
     var params={
-        fields:{},
-        fields: {},
-        where: {
-
-        },
         skip:skip,
         limit:LIMIT,
-        order:"createdAt DESC"
+        userid:$api.getStorage('userInfo').id,
     }
-    params=$api.jsonToStr(params);
-    api.ajax({
-        url: 'http://d.apicloud.com/mcm/api/ware?filter='+params,
-        method: 'get',
-        headers: {
-            "X-APICloud-AppId": "A6099267504667",
-            "X-APICloud-AppKey":   appKey
-        },
 
+   
+    api.ajax({
+        url: 'http://api.chaodashe.com/index.php/Dressingselectware',
+        method: 'get',
+        data:{
+            values:params
+        },
+        headers:{'Token':$api.getStorage('token')},
     },function(ret, err){
         if (ret) {
 
          // 模板渲染
-         // alert($api.jsonToStr( ret))
-         updateWareList(ret,_LoadMore);
+         // alert($api.jsonToStr(ret));
+         updateWareList(ret.data,_LoadMore);
      } else {
         api.toast({
          msg: err.msg,

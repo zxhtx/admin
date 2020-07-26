@@ -381,10 +381,11 @@
 						"music": music
 					},
 				},
+				headers:{'Token':$api.getStorage('token')},
 				report: true,
 			}, function(ret, err) {
-
-
+				
+				
 				UIActionProgress.setData({
 					data: {
 						title: '正在上传...',

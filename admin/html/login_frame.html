@@ -104,11 +104,12 @@
 
     $.ajax({
     type: 'post',
-    url: 'https://api.chaodashe.com/index.php/login',
+    url: 'http://api.chaodashe.com/index.php/login',
     dataType: 'json',
     data: values,
     success: function (data) {
        $api.setStorage('userInfo', data.data);
+       $api.setStorage('token',data.token);
             api.toast({
                 msg: '登录成功',
                 duration: 2000,

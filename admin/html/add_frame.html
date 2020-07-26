@@ -51,6 +51,16 @@
 			background-size:cover ;
 			background-position:center center;
 		}
+		.shouhou{
+
+			height: 50px;
+			width: 100px;
+			line-height:50px;
+			border: 1px solid red;
+			font-size: 17px;
+			margin-top: 3px;
+			text-align: center;
+		}
 </style>
 </head>
 <body>
@@ -101,6 +111,25 @@
 
 		</tr>
 		<tr>
+			<th>售后</th>
+			<td>
+				<div class="shouhou sevenT" onclick="th(0)">七天退货</div>
+				<div class="shouhou sevenH" onclick="th(1)">七天换货</div>
+			</td>
+			
+		</tr>
+		<tr>
+			<th>是否推荐</th>
+			<td>
+				<div class="shouhou notj" onclick="tj(0)">不推荐</div>
+				<div class="shouhou yestj" onclick="tj(1)">推荐</div>
+			</td>
+		</tr>
+		<tr>
+			<th>(是否)推荐理由</th>
+			<td><input type="text" id="qualitybody"></td>
+		</tr>
+		<tr>
 			<th>上传</th>	
 			<td class="red"><input type="button" value="上传" tapmode onclick="uploadAtavar()"></td>
 		</tr>
@@ -121,10 +150,50 @@
 	var addInfo={};
 	var wareInfoId;
 	var listimg = [];
+	var sevenT=0;
+	var sevenH=0;
+	var qualitytitle=0;
+	var qualitybody=0;
 	var mydate = new Date();
 	apiready = function(){
 
 	};
+	function th(index){
+		// 退货
+		if(index==0){
+			if(sevenT==0){
+				sevenT=1;
+				$('.sevenT').css('background','red');
+			}else{
+				sevenT=0;
+				$('.sevenT').css('background','#fff');
+			}
+
+		}else{
+			if(sevenH==0){
+				sevenH=1;
+				$('.sevenH').css('background','red');
+			}else{
+				sevenH=0;
+				$('.sevenH').css('background','#fff');
+			}
+
+		}
+
+	}
+
+	function tj(index){
+		if(index==0){
+			qualitytitle='不推荐';
+			$('.notj').css('background','red');
+			$('.yestj').css('background','#fff');
+		}else{
+			qualitytitle='推荐';
+			$('.yestj').css('background','red');
+			$('.notj').css('background','#fff');
+		}
+		
+	}
 	function select(){
 		var myselect=$api.byId("test");
 		var index=myselect.selectedIndex ;
@@ -137,7 +206,7 @@
 
 		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
 			var size=$api.byId('size').value;
-			var arrsize=size.split("-");
+			var arrsize=size.split(",");
 			var start=arrsize[0];
 			var end=arrsize[1];
 			var addarr=[];
@@ -148,13 +217,39 @@
             addInfo.size=addarr.toString();
 		}else {
 			var size=$api.byId('size').value;
-			var addarr=size.split("-");
+			var addarr=size.split(",");
+			var sizelist=new Array();
+			sizelist[0]='s';
+			sizelist[1]='m';
+			sizelist[2]='l';
+			sizelist[3]='xl';
+			sizelist[4]='2xl';
+			sizelist[5]='3xl';
+			sizelist[6]='4xl';
+			sizelist[7]='5xl';
+			sizelist[8]='6xl';
 
-			addInfo.size=addarr.toString();
+			var sizestrat;
+			var sizeend;
+			for(var i=0;i<sizelist.length;i++){
+				if(addarr[0].toLowerCase()==sizelist[i]){
+					sizestrat=i;
+					continue;
+				}
+				if(addarr[1].toLowerCase()==sizelist[i]){
+					sizeend=i;
+					continue;
+				}
+			}
+			// alert(sizestrat);
+		
+			
+		
+			addInfo.size=sizelist.slice(sizestrat,sizeend+1).toString();
 		}
 
 		var color=$api.byId('color').value;
-		var arrcolor=color.split("-");
+		var arrcolor=color.split(",");
 		 addInfo.color=arrcolor.toString()
 		 save();
 	}
@@ -218,12 +313,27 @@
 		     // var shangjia=$api.byId('shangjia').value;
 			 // var des = text.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
 			// addInfo.text = $api.byId('jieshao').value;
+			var qualitybody=$api.byId('qualitybody').value;
+			if(qualitybody){
+				addInfo.qualitybody=qualitybody;
+			}else{
+				addInfo.qualitybody=0;
+			}
+			addInfo.qualitytitle=qualitytitle;
+			alert($api.jsonToStr(addInfo));
+			return;
 			addInfo.price=$api.byId('price').value;
 			addInfo.description=$api.byId('jieshao').value;
 			addInfo.shangjia=$api.byId('shangjia').value;
+			addInfo.userid=$api.getStorage('userInfo').id;
+			addInfo.sevenT=sevenT;
+			addInfo.sevenH=sevenH;
 			// addInfo.userid = userInfo.id;
 			// alert(1)
 			// return;
+			var token=$api.getStorage('token');
+			// alert(token);
+			// alert($api.getStorage('userInfo').id);
 			api.ajax({
 				url: 'http://api.chaodashe.com/index.php/addware',
 				method: 'post',
@@ -233,11 +343,18 @@
 						"image[]": listimg,
 					},
 				},
+				headers:{'Token':token},
 				report: true,
 			}, function(ret, err) {
 
 
-				alert($api.jsonToStr(ret))
+				// alert($api.jsonToStr(ret))
+				api.toast({
+				    msg: ret.progress,
+				});
+				if(ret.code==200){
+					toast('ok');
+				}
 			});
   }
 </script>
