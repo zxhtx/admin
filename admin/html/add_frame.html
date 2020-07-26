@@ -336,6 +336,7 @@
 			var token=$api.getStorage('token');
 			// alert(token);
 			// alert($api.getStorage('userInfo').id);
+			alert($api.jsonToStr(addInfo));
 			api.ajax({
 				url: 'http://api.chaodashe.com/index.php/addware',
 				method: 'post',
@@ -356,6 +357,8 @@
 				});
 				if(ret.code==200){
 					toast('ok');
+				}else{
+					alert('21312');
 				}
 			});
   }
