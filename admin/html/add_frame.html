@@ -206,7 +206,7 @@
 
 		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
 			var size=$api.byId('size').value;
-			var arrsize=size.split(",");
+			var arrsize=size.split(" ");
 			var start=arrsize[0];
 			var end=arrsize[1];
 			var addarr=[];
@@ -215,9 +215,10 @@
 			};
 
             addInfo.size=addarr.toString();
+
 		}else {
 			var size=$api.byId('size').value;
-			var addarr=size.split(",");
+			var addarr=size.split(" ");
 			var sizelist=new Array();
 			sizelist[0]='s';
 			sizelist[1]='m';
@@ -241,7 +242,8 @@
 					continue;
 				}
 			}
-			// alert(sizestrat);
+			// alert(sizelist.slice(sizestrat,sizeend+1).toString());
+		
 		
 			
 		
@@ -249,7 +251,7 @@
 		}
 
 		var color=$api.byId('color').value;
-		var arrcolor=color.split(",");
+		var arrcolor=color.split(" ");
 		 addInfo.color=arrcolor.toString()
 		 save();
 	}
@@ -348,7 +350,7 @@
 			}, function(ret, err) {
 
 
-				// alert($api.jsonToStr(ret))
+				alert($api.jsonToStr(ret))
 				api.toast({
 				    msg: ret.progress,
 				});
