@@ -298,10 +298,10 @@
 			var fileBrowser = api.require('fileBrowser');
 			fileBrowser.open(function(ret) {
 				if (ret) {
-					alert(JSON.stringify(ret));
+					// alert(JSON.stringify(ret));
 					var dian = /\./g;
 					var path = ret.url;
-					alert(path);
+					// alert(path);
 					if (path.match(dian).length > 1) {
 						api.toast({
 							msg: '音乐文件名不规范',
@@ -314,7 +314,7 @@
 					}
 				}
 			});
-			alert(music);
+			// alert(music);
 			fileBrowser.close();
 		}
 
