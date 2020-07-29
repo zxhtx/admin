@@ -298,10 +298,10 @@
 			var fileBrowser = api.require('fileBrowser');
 			fileBrowser.open(function(ret) {
 				if (ret) {
-					// alert(JSON.stringify(ret));
+					alert(JSON.stringify(ret));
 					var dian = /\./g;
 					var path = ret.url;
-					// alert(path);
+					alert(path);
 					if (path.match(dian).length > 1) {
 						api.toast({
 							msg: '音乐文件名不规范',
@@ -314,29 +314,8 @@
 					}
 				}
 			});
-			// $('#file').click();
-			// 	var selectFile = api.require('selectFile');
-			// selectFile.open(function(ret, err){
-			//  		 if(ret.status){
-			//  		 	var dian=/\./g;
-			//  		 	var path=ret.path;
-			// 	alert(path);
-			//  		 	if (path.match(dian).length>1) {
-			//  		 		api.toast({
-			//  		 		    msg:'音乐文件名不规范',
-			//  		 		    duration: 2000,
-			// 			location: 'bottom'
-
-			//  		 		});
-			//  		 	}else{
-			//  		 		music=ret.path;
-			//  		 	}
-
-			//       	// alert(JSON.stringify(ret.path));
-			//   	}else{
-			//       	alert('选择文件不存在');
-			//   	}
-			// });
+			alert(music);
+			fileBrowser.close();
 		}
 
 		function addware() {
