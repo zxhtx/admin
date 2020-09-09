@@ -52,12 +52,19 @@
 <body>
     <header id="header">
         <div class="back"  tapmode onclick="closewin()"></div>
-        <h1>查询订单(已支付)</h1>
+        <h1 class="title">查询订单(退货)</h1>
     </header>
 </body>
+    <script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript">
     apiready = function() {
+        if (api.pageParam.isrefund==1){
+
+            $('.title').html('退货订单(已退款)')
+        }else{
+            $('.title').html('退货订单(未退款退货)')
+        }
     api.setScreenOrientation({orientation:"auto"});
        var header=$api.byId('header');
          api.setStatusBarStyle({
@@ -68,8 +75,8 @@
         // 获取header和nav的高
         headerH=$api.offset(header).h
         api.openFrame({
-            name: 'select_frame',
-            url: './select_frame.html',
+            name: 'select_tuihuo_frame',
+            url: './select_tuihuo_frame.html',
             rect: {
                 x: 'auto',
                 y: headerH,
@@ -77,7 +84,7 @@
                 h: 'auto'
             },
             pageParam: {
-                ispay:api.pageParam.ispay,
+                isrefund:api.pageParam.isrefund
             },
              allowEdit:true,
             bounces: false

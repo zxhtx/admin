@@ -158,8 +158,10 @@
 	<section>
 		<div tapmode onclick="add()" class="add">添加数据</div>
 		<div tapmode onclick="addDressing()" class="addDressing">添加穿搭数据</div>
-		<div tapmode onclick="select()" class="select">查询订单</div>
-		<div tapmode onclick="users()" class="users">所有用户</div>
+		<div tapmode onclick="select(1)" class="select">已支付订单</div>
+		<div tapmode onclick="select(0)" class="select">未支付订单</div>
+		<div tapmode onclick="select_tuihuo(0)" class="users">退货订单(未退款)</div>
+		<div tapmode onclick="select_tuihuo(1)" class="users">退货订单(已退款)</div>
 		<div tapmode onclick="selectuser()" class="selectuser">查询用户</div>
 		<div tapmode onclick="del()" class="del">删除商品</div>
 		<div tapmode onclick="gonggao()" class="gonggao">主页公告</div>
@@ -204,12 +206,12 @@
 		}
 	}
 
-	function select(){
+	function select(index){
 		api.openWin({
 			name: 'select',
 			url: './select.html',
 			pageParam: {
-				name: 'test'
+				ispay: index
 			}
 		});
 	}
@@ -249,12 +251,12 @@
 			}
 		});
 	}
-	function users(){
+	function select_tuihuo(index){
 		api.openWin({
-			name: 'users.html',
-			url: './users.html',
+			name: 'select_tuihuo.html',
+			url: './select_tuihuo.html',
 			pageParam: {
-				name: 'test'
+				isrefund: index
 			}
 		});
 	}

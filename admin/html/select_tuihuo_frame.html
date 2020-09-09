@@ -44,19 +44,23 @@
 	.blue{
 		color: blue;
 	}
+	.black{
+		color: black;
+	}
 </style>
 </head>
 <body>
 	<table class="gridtable" id="list">
-	<tr><th>商品</th><th>原价</th><th>支付价格</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>单号</th><th>商品图</th><th>是否支付</th><th>删除</th></tr>
+	<tr><th>订单号</th><th>商品</th><th>原价</th><th>支付价格</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>商品图</th><th>是否支付</th><th>理由</th><th>是否退款</th></tr>
 	</table>
 
 </body>
 <script type="text/template" id="template">
 
 	{{~it:value:index}}
-	
+	{{? value.dindantypeid=='5c2a39add37a824c5ac6cc66'}}
 	<tr class="red">
+		<td>{{=value.dindanhao}}</td>
 		<td tapmode onclick="fuzhi('{{=value.description}}')" >{{=value.description}}</td>
 		<td class="blue">{{=value.oldprice}}</td>
 		<td class="blue">{{=value.newprice}}</td>
@@ -69,25 +73,25 @@
 		<td>{{=value.username}}</td>
 		
 
-		{{? value.danhao }}
-		<td class="danhao"  tapmode onclick="adddanhao('{{=value.id}}')">{{=value.danhao}}</td>
-		{{?? value.newprice!= value.oldprice- value.cb/100 - value.dandanjian }}
-		<td class="red">不可操作</td>
-		{{?? value.newprice== value.oldprice- value.cb/100 - value.dandanjian  }}
-		<td class="green" tapmode onclick="adddanhao('{{=value.id}}')">上传单号</td>
-		{{?}}
+	
 
 		<td class="green" tapmode onclick="openimgWin('{{=value.url}}')">点击查看</td>
-		{{? value.newprice== value.oldprice- value.cb/100 - value.dandanjian && value.paytime}}
+		{{? value.newprice== value.oldprice- value.cb/100 - value.dandanjian }}
 		<td class="green">已支付</td>
 		{{??}}
 		<td class="red">未支付</td>
 		{{?}}
+		 <td class="black">{{=value.thtext}}</td>
+		{{? value.isrefund==0}}
+			<td class="red" tapmode onclick="refund('{{=value.id}}')">未退款(点击退款)</td>
+		{{??}}
 
-		<td class="red" tapmode onclick="no('{{=value.id}}')">删除</td>
+			<td class="green" >已退款</td>
+		{{?}}
+		
 	</tr>
 
-
+	{{?}}
 	{{~}} 
 
 </script>
@@ -129,28 +133,27 @@
 				}
 			}
 		});
-
-		if (api.pageParam.ispay==0) {
-			 var params={
-		     	skip:skip,
-		     	limit:LIMIT,
-		     	userid:userInfo.id,
-		     	type:'5c2a3991af3114d73d9ddfc2',
-		     }
-
-		}else{
-			 var params={
-	     	skip:skip,
-	     	limit:LIMIT,
-	     	userid:userInfo.id,
-	     	type:'5c2a39a2af3114d73d9ddfc3',
-	     }
-
-		}
-    
+	if (api.pageParam.isrefund==0) {
+		var params={
+     	skip:skip,
+     	limit:LIMIT,
+     	userid:userInfo.id,
+     	type:'5c2a39add37a824c5ac6cc66',
+     	refund:0,
+       }
+	}else{
+	  var params={
+     	skip:skip,
+     	limit:LIMIT,
+     	userid:userInfo.id,
+     	type:'5c2a39add37a824c5ac6cc66',
+     	refund:1,
+     }
+	}
+   
       
       api.ajax({
-      	url: 'http://api.chaodashe.com/index.php/selectdindan',
+      	url: 'http://api.chaodashe.com/index.php/selecttuihuo',
       	method: 'get',
       	data:{values:params},
       	headers:{'Token':$api.getStorage('token')},
@@ -162,11 +165,13 @@
          // alert($api.jsonToStr(ret))
 
      } else {
+     	 // alert($api.jsonToStr(ret))
      	api.toast({
      		msg: err.msg,
      		duration: 2000,
      		location: 'bottom'
      	});
+     	api.closeWin();
      }
  });
   }
@@ -329,25 +334,29 @@ function openimgWin(_path){
 	});
 
 }
-function no(_id){
+function refund(_id){
 	api.confirm({
 		title: '提示',
-		msg: '确定删除?',
+		msg: '确定已经退款给用户?',
 		buttons: ['确定', '取消']
 	}, function(ret, err){
 		if( ret.buttonIndex==1 ){
 			api.ajax({
-				url: 'http://d.apicloud.com/mcm/api/shoppinginformation/'+_id,
-				method: 'delete',
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey
+				url: 'http://api.chaodashe.com/index.php/refund',
+				method: 'post',
+				data:{
+					values:{'id':_id,'userid':userInfo.id}
 				},
-
+				headers:{'Token':$api.getStorage('token')},
 			},function(ret, err){
-				if (ret) {
+				if (ret.code==200) {
 					getAddressList();
-				} 
+
+				}else{
+					api.toast({
+					    msg: ret.message
+					});
+				}
 			});
 
 		}else{
