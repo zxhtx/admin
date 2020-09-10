@@ -48,7 +48,7 @@
 </head>
 <body>
 	<table class="gridtable" id="list">
-	<tr><th>商品</th><th>原价</th><th>支付价格</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>单号</th><th>商品图</th><th>是否支付</th><th>删除</th></tr>
+	<tr><th>商品</th><th>原价</th><th>支付价格</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>单号</th><th>商品图</th><th>是否支付</th><th>类型</th><th>删除</th></tr>
 	</table>
 
 </body>
@@ -80,10 +80,25 @@
 		<td class="green" tapmode onclick="openimgWin('{{=value.url}}')">点击查看</td>
 		{{? value.newprice== value.oldprice- value.cb/100 - value.dandanjian && value.paytime}}
 		<td class="green">已支付</td>
+		{{?? value.gwqid!=0 }}
+			<td class="red">购物券支付</td>
 		{{??}}
-		<td class="red">未支付</td>
+		 <td class="red">未支付</td>
 		{{?}}
 
+		{{? value.dindantypeid=='5c2a3991af3114d73d9ddfc2'}}
+			 <td class="red">待付款</td>
+		{{?? value.dindantypeid=='5c2a39a2af3114d73d9ddfc3'}}
+			 <td class="green">待收货</td>
+		{{?? value.dindantypeid=='5c2a39add37a824c5ac6cc64'}}
+			 <td class="green">已签收</td>
+		{{?? value.dindantypeid=='5c2a39add37a824c5ac6cc65'}}
+			 <td class="red">换货</td>
+		{{?? value.dindantypeid=='5c2a39add37a824c5ac6cc66'}}
+			 <td class="red">退货</td>
+		{{?? value.dindantypeid=='5c2a39add37a824c5ac6cc67'}}
+			 <td class="red">已取消购买</td>
+		{{?}}
 		<td class="red" tapmode onclick="no('{{=value.id}}')">删除</td>
 	</tr>
 
@@ -130,34 +145,25 @@
 			}
 		});
 
-		if (api.pageParam.ispay==0) {
-			 var params={
-		     	skip:skip,
-		     	limit:LIMIT,
-		     	userid:userInfo.id,
-		     	type:'5c2a3991af3114d73d9ddfc2',
-		     }
-
-		}else{
+		
 			 var params={
 	     	skip:skip,
 	     	limit:LIMIT,
 	     	userid:userInfo.id,
-	     	type:'5c2a39a2af3114d73d9ddfc3',
 	     }
 
-		}
     
       
       api.ajax({
-      	url: 'http://api.chaodashe.com/index.php/selectdindan',
+      	url: 'http://api.chaodashe.com/index.php/selectalldindan',
       	method: 'get',
       	data:{values:params},
       	headers:{'Token':$api.getStorage('token')},
       },function(ret, err){
       	if (ret.code==200) {
          // 模板渲染
-        
+        // alert($api.jsonToStr(ret))
+
          updateWareList(ret.data,_LoadMore);
          // alert($api.jsonToStr(ret))
 

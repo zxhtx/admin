@@ -152,19 +152,26 @@
 		color: white;
 
 	}
+	.green{
+		color: green;
+	}
+	.red{
+		color: red;
+	}
 </style>
 </head>
 <body>
 	<section>
 		<div tapmode onclick="add()" class="add">添加数据</div>
 		<div tapmode onclick="addDressing()" class="addDressing">添加穿搭数据</div>
-		<div tapmode onclick="select(1)" class="select">已支付订单</div>
-		<div tapmode onclick="select(0)" class="select">未支付订单</div>
-		<div tapmode onclick="select_tuihuo(0)" class="users">退货订单(未退款)</div>
-		<div tapmode onclick="select_tuihuo(1)" class="users">退货订单(已退款)</div>
+		<div tapmode onclick="select_all()" class="select">所有订单</div>
+		<div tapmode onclick="select(1)" class="select green">已支付订单</div>
+		<div tapmode onclick="select(0)" class="select red">未支付订单</div>
+		<div tapmode onclick="select_tuihuo(0)" class="users red">退货订单(未退款)</div>
+		<div tapmode onclick="select_tuihuo(1)" class="users green">退货订单(已退款)</div>
 		<div tapmode onclick="selectuser()" class="selectuser">查询用户</div>
 		<div tapmode onclick="del()" class="del">删除商品</div>
-		<div tapmode onclick="gonggao()" class="gonggao">主页公告</div>
+		
 		<!-- <div tapmode onclick="gomusic()" class="gonggao">音乐</div> -->
 		<div tapmode onclick="login()" class="login">登录</div>
 		<div  tapmode onclick="loginout()" class="loginout">退出登录</div>
@@ -215,6 +222,15 @@
 			}
 		});
 	}
+	function select_all(){
+		api.openWin({
+		    name: 'select_all',
+		    url: './select_all.html',
+		    pageParam: {
+		        name: 'test'
+		    }
+		});
+	}
 	function add(){
 		api.openWin({
 			name: 'add.html',
@@ -260,29 +276,7 @@
 			}
 		});
 	}
-	function gonggao(){
-		// api.openWin({
-		// 	name: 'gonggao.html',
-		// 	url: './gonggao.html',
-		// 	pageParam: {
-		// 		name: 'test'
-		// 	}
-		// });
-		api.openFrame({
-		    name: 'warelist_frame',
-		    url: 'warelist_frame.html',
-		    rect: {
-		        x: 0,
-		        y: 0,
-		        w: 'auto',
-		        h: 'auto'
-		    },
-		    pageParam: {
-		        name: 'value'
-		    },
-		    bounces: true
-		});
-	}
+	
 	function gomusic(){
 		var selectFile = api.require('selectFile');
 		selectFile.open(function(ret, err){
