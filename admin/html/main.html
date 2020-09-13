@@ -171,7 +171,7 @@
 		<div tapmode onclick="select_tuihuo(1)" class="users green">退货订单(已退款)</div>
 		<div tapmode onclick="selectuser()" class="selectuser">查询用户</div>
 		<div tapmode onclick="del()" class="del">删除商品</div>
-		
+		<div tapmode onclick="openappversion()" class="del">版本更新</div>
 		<!-- <div tapmode onclick="gomusic()" class="gonggao">音乐</div> -->
 		<div tapmode onclick="login()" class="login">登录</div>
 		<div  tapmode onclick="loginout()" class="loginout">退出登录</div>
@@ -265,6 +265,15 @@
 			pageParam: {
 				name: 'test'
 			}
+		});
+	}
+	function openappversion(){
+		api.openWin({
+		    name: 'appversion',
+		    url: './appversion.html',
+		    pageParam: {
+		        name: 'test'
+		    }
 		});
 	}
 	function select_tuihuo(index){

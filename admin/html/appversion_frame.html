@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<title>title</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+	<style>
+
+</style>
+</head>
+	<style type="text/css">
+		.version{
+			width: 100%;
+			height:20px;
+			outline: 0;
+			border-bottom: 1px solid #000;
+			text-align: center;
+
+		}
+		.file{
+			width: 100%;
+			margin-top: 20px;
+			text-align: center;
+			height: 30px;
+			line-height: 30px;
+			/*margin-left: 66px;*/
+		}
+		.up{
+			width: 100%;
+			height: 50px;
+			line-height: 50px;
+			margin-top: 50px;
+			background-color: #000;
+			color: #fff;
+			text-align: center;
+		}
+	</style>
+<body>
+	<div>
+		<input type="text" class="version">
+		<!-- <input type="file" class="file" enctype="multipart/form-data" onchange=""> -->
+		<div class="file" onclick="selectdate()">选择文件</div>
+		<div class="up" onclick="update()">上传更新</div>
+	</div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/1.8.0/jquery.min.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+	var Appurl;
+	apiready = function(){
+		getversion();
+    };
+    function getversion(){
+    	api.ajax({
+    	    url: 'http://api.chaodashe.com/index.php/getversion',
+    	    method: 'get',
+    	}, function(ret, err) {
+    	    if (ret) {
+    	       nowversion=Number(ret.data.app_version)+Number(0.01);
+    	       $('.version').val(nowversion)
+    	    } else {
+    	        alert(JSON.stringify(err));
+    	    }
+    	});
+    }
+    function selectdate(){
+    	var fileBrowser = api.require('fileBrowser');
+			fileBrowser.open(function(ret) {
+				if (ret) {
+					$('.file').html('已选择文件('+ret.name+')');
+					 Appurl=ret.url;
+				}
+			});
+     }
+  	
+  	function update(){
+  		var appversion=$('.version').val();
+
+  		api.ajax({
+			url: 'http://api.chaodashe.com/index.php/updateApp',
+			method: 'post',
+		    data: {
+				 	 values: { 
+				    	version: appversion
+				  	},
+				 	 files: { 
+				     	 "App": Appurl
+				  	}
+			  }
+	   }, function(ret, err) {
+	    if (ret) {
+			      api.toast({
+			          msg: '更新成功'
+			      });
+				 } else {
+			      alert(JSON.stringify(err));
+			  }
+	    });
+  	}
+</script>
+</html>
