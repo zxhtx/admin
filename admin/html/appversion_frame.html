@@ -57,8 +57,9 @@
     	    method: 'get',
     	}, function(ret, err) {
     	    if (ret) {
-    	       nowversion=Number(ret.data.app_version)+Number(0.01);
-    	       $('.version').val(nowversion)
+    	       // nowversion=Number(ret.data.app_version)+Number(0.01);
+    	       
+    	       $('.version').val(accAdd(ret.data.app_version,0.01))
     	    } else {
     	        alert(JSON.stringify(err));
     	    }
@@ -87,8 +88,12 @@
 				 	 files: { 
 				     	 "App": Appurl
 				  	}
-			  }
+			  },
+			  report: true,
 	   }, function(ret, err) {
+	   		api.toast({
+	   		    msg:  ret.progress
+	   		});
 	    if (ret) {
 			      api.toast({
 			          msg: '更新成功'
@@ -98,5 +103,27 @@
 			  }
 	    });
   	}
+
+  	function  accAdd(data1, data2) {
+    var r1, r2, m, c;
+    try {  r1 = data1.toString().split(".")[1].length;}catch (e) {  r1 = 0; }
+    try { r2 = data2.toString().split(".")[1].length; } catch (e) { r2 = 0; }
+    c = Math.abs(r1 - r2);
+    m = Math.pow(10, Math.max(r1, r2));
+    if (c > 0) {
+        var cm = Math.pow(10, c);
+        if (r1 > r2) {
+            data1= Number(data1.toString().replace(".", ""));
+            data2= Number(data2.toString().replace(".", "")) * cm;
+        } else {
+            data1= Number(data1.toString().replace(".", "")) * cm;
+            data2= Number(data2.toString().replace(".", ""));
+        }
+    } else {
+        data1= Number(data1.toString().replace(".", ""));
+        data2= Number(data2.toString().replace(".", ""));
+    }
+    return (data1+ data2) / m;
+}
 </script>
 </html>
