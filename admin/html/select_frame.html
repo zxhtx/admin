@@ -80,8 +80,10 @@
 		<td class="green" tapmode onclick="openimgWin('{{=value.url}}')">点击查看</td>
 		{{? value.newprice== value.oldprice- value.cb/100 - value.dandanjian && value.paytime}}
 		<td class="green">已支付</td>
+		{{?? value.gwqid!=0}}
+			<td class="green">购物券下单</td>
 		{{??}}
-		<td class="red">未支付</td>
+			<td class="red">未支付(交易金额错误)</td>
 		{{?}}
 
 		<td class="red" tapmode onclick="no('{{=value.id}}')">删除</td>
@@ -163,10 +165,11 @@
 
      } else {
      	api.toast({
-     		msg: err.msg,
-     		duration: 2000,
+     		msg: ret.message,
+     		duration: 3000,
      		location: 'bottom'
      	});
+     
      }
  });
   }
@@ -270,7 +273,7 @@ function initEventListenter(){
 			threshold:100
 		}
 	}, function(ret, err){        
-		// getAddressList(true);
+		getAddressList(true);
 	});
 }
 

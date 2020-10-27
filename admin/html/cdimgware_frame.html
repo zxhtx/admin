@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" name="viewport"/>
+    <meta content="telephone=no,email=no,date=no,address=no" name="format-detection">
+    <title>
+        登录Frame
+    </title>
+    <link href="../css/api.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js">
+    </script>
+    <script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js">
+    </script>
+    <style>
+        body {
+            /*text-align: center;*/
+            margin:0px;
+            padding: 0px;
+        }
+        .itme{
+            width: 100%;
+            height: 100px;
+            border: 1px solid red;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .wareimg,.cdimg{
+            width: 100px;
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+        }
+
+    </style>
+</meta>
+</meta>
+</head>
+<body>
+    <div class="list">
+    </div>
+</body>
+<script src="../script/api.js" type="text/javascript">
+</script>
+
+<script type="text/javascript" src="../script/doT.min.js"></script>
+<script id="template" type="text/template">
+    {{~it.list:value:index}}
+        <div class="itme item_{{=value.id}}">
+            <span>商<br/>品<br/>图</span>
+            <div class="wareimg" style="background-image:url({{=value.wareimg}})" ></div>
+            <span>穿<br/>搭<br/>图</span>
+            <div class="cdimg" style="background-image:url({{=value.cdimg}})" ></div>
+            <div style="color:green" onclick="examine('{{=value.id}}')">通过</div>
+            <div style="color:red" onclick="del('{{=value.id}}')">删除</div>
+        </div>
+   {{~}}
+</script>
+<script type="text/javascript">
+    var skip=0;
+    var limit=18;
+    var userInfo;
+    apiready = function() {
+         userInfo=$api.getStorage('userInfo');
+        initEventListenter();
+        exacdimgware();
+
+    };
+    function initEventListenter(){
+    api.addEventListener({
+        name:'scrolltobottom',
+        extra:{
+            threshold:100
+        }
+    }, function(ret, err){        
+        exacdimgware(true);
+    });
+}
+    function exacdimgware(_loadMore){
+        if(_loadMore){
+            skip+=limit;
+        }else{
+            skip=0;
+        }
+       var addInfo={
+        skip:skip,
+        limit:limit,
+    }
+    api.ajax({
+        url: 'http://api.chaodashe.com/index.php/examine_cdimgware',
+        method: 'get',
+        data: {
+            values:addInfo
+        }
+    }, function(ret, err) {
+    if (ret) {
+        if(ret.code==200){
+            updatelist(ret.data,_loadMore);
+        }else{
+
+            api.toast({
+                msg: ret.message
+            });
+        }
+     } 
+});
+
+
+}
+function updatelist(ret,_loadMore){
+    var param = {
+        list: ret,
+        imgurl: 'http://img.chaodashe.com/',
+    };
+    var tempFn = doT.template($('#template').text());
+                        // 使用模板函数生成HTML文本
+         var resultHTML = tempFn(param);
+         if(_loadMore){
+            $('.list').append(resultHTML);
+        }else{
+             $('.list').html(resultHTML);
+                            
+         }
+                          
+     }
+
+function examine(id){
+     api.ajax({
+        url: 'http://api.chaodashe.com/index.php/examine_cdimgware_ok',
+        method: 'post',
+        data: {
+            values:{
+                "userid":userInfo.id,
+                "id":id
+            }
+        },
+        headers:{'Token':$api.getStorage('token')},
+    }, function(ret, err) {
+        if (ret) {
+         // updatelist(ret.data,_loadMore);
+         // alert($api.jsonToStr(ret))
+         api.toast({
+             msg: ret.message
+         });
+     } else {
+        alert(JSON.stringify(err));
+    }
+  })
+}
+function del(id){
+   var is_del=confirm('是否要删除');
+   if(is_del){
+       api.ajax({
+        url: 'http://api.chaodashe.com/index.php/examine_cdimgware_del',
+        method: 'post',
+        data: {
+            values:{
+                "userid":userInfo.id,
+                "id":id
+            }
+        },
+        headers:{'Token':$api.getStorage('token')},
+    }, function(ret, err) {
+        if (ret) {
+         api.toast({
+             msg: ret.message
+         });
+         $('.item_'+id).remove()
+     } else {
+        alert(JSON.stringify(err));
+    }
+  })
+
+    
+   }
+}
+ </script>
+
+</html>
