@@ -51,7 +51,7 @@
 </head>
 <body>
 	<table class="gridtable" id="list">
-	<tr><th>订单号</th><th>商品</th><th>原价</th><th>支付价格</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>商品图</th><th>是否支付</th><th>理由</th><th>是否退款</th></tr>
+	<tr><th>是否支付</th><th>类型</th><th>订单号</th><th>商品</th><th>原价</th><th>支付价格</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>商品图</th><th>理由</th><th>是否退款</th></tr>
 	</table>
 
 </body>
@@ -59,7 +59,32 @@
 
 	{{~it:value:index}}
 	{{? value.dindantypeid=='5c2a39add37a824c5ac6cc66'}}
-	<tr class="red">
+	<tr class="black">
+		{{? value.newprice== value.oldprice- value.cb/100 - value.dandanjian && value.paytime}}
+		<td class="green">已支付</td>
+		{{?? value.gwqid!=0}}
+			<td class="green">购物券下单</td>
+		{{??}}
+			<td class="red">未支付(交易金额错误)</td>
+		{{?}}	
+
+		{{if(value.dindantypeid=='5c2a3991af3114d73d9ddfc2'){}}
+
+			<td>待付款</td>
+		{{ }else if(value.dindantypeid=='5c2a39a2af3114d73d9ddfc3'){ }}
+
+			<td>待收货</td>
+
+		{{ }else if(value.dindantypeid=='5c2a39add37a824c5ac6cc64'){ }}
+			<td>已签收</td>
+		{{ }else if(value.dindantypeid=='5c2a39add37a824c5ac6cc65'){ }}
+			<td>换货</td>
+		{{ }else if(value.dindantypeid=='5c2a39add37a824c5ac6cc66'){ }}
+			<td>退货</td>
+		{{ }else if(value.dindantypeid=='5c2a39add37a824c5ac6cc67'){ }}
+			<td>已取消购买</td>
+
+		{{ } }}
 		<td>{{=value.dindanhao}}</td>
 		<td tapmode onclick="fuzhi('{{=value.description}}')" >{{=value.description}}</td>
 		<td class="blue">{{=value.oldprice}}</td>
@@ -76,13 +101,7 @@
 	
 
 		<td class="green" tapmode onclick="openimgWin('{{=value.url}}')">点击查看</td>
-		{{? value.newprice== value.oldprice- value.cb/100 - value.dandanjian }}
-		<td class="green">已支付</td>
-		{{?? value.gwqid!=0}}
-			<td class="green">购物券下单</td>
-		{{??}}
-			<td class="red">未支付(交易金额错误)</td>
-		{{?}}
+		
 		 <td class="black">{{=value.thtext}}</td>
 		{{? value.isrefund==0}}
 			<td class="red" tapmode onclick="refund('{{=value.id}}')">未退款(点击退款)</td>
@@ -168,6 +187,7 @@
 
      } else {
      	 // alert($api.jsonToStr(ret))
+     	 activity.closeKeyFrame()
      	api.toast({
      		msg: ret.message,
      		duration: 3000,

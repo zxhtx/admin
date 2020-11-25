@@ -218,6 +218,10 @@
 
 		}else {
 			var size=$api.byId('size').value;
+			if(size=='均码'){
+				addInfo.size='均码';
+			}else{
+
 			var addarr=size.split(" ");
 			var sizelist=new Array();
 			sizelist[0]='s';
@@ -247,7 +251,11 @@
 		
 			
 		
-			addInfo.size=sizelist.slice(sizestrat,sizeend+1).toString();
+			addInfo.size=sizelist.slice(sizestrat,sizeend+1).toString();	
+
+			}
+
+			
 		}
 
 		var color=$api.byId('color').value;

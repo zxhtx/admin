@@ -237,7 +237,8 @@ function updatelist(ret,_loadMore){
         }
         var addInfo={
             'id':id,
-            'url':sqltext
+            'url':sqltext,
+            'isread':0
         }
         alert(sqltext)
         api.ajax({
