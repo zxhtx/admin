@@ -201,6 +201,14 @@
 
 	}
 	
+	function isNumber(val) {
+　　  if (parseFloat(val).toString() == "NaN") {
+　　　　
+　　  　　return false;
+　　     } else {
+　　　　　return true;
+　　   }
+	}
 	function uploadAtavar(_data,number){
 		
 
@@ -209,56 +217,78 @@
 			var arrsize=size.split(" ");
 			var start=arrsize[0];
 			var end=arrsize[1];
-			var addarr=[];
+			var addarrsizelist=[];
 			for (var i = start; i <=end; i++) {
-				addarr.push(i);
+				addarrsizelist.push(i);
 			};
 
-            addInfo.size=addarr.toString();
+            addInfo.size=addarrsizelist.toString();
 
 		}else {
 			var size=$api.byId('size').value;
-			if(size=='均码'){
-				addInfo.size='均码';
+			var arrsize=size.split(" ");
+
+
+			if(isNumber(arrsize[0]) && isNumber(arrsize[1]) ){
+
+				var start=arrsize[0];
+				var end=arrsize[1];
+				var addarrsizelist=[];
+				for (var i = start; i <=end; i++) {
+					addarrsizelist.push(i);
+				};
+
+	            addInfo.size=addarrsizelist.toString();
+    				
 			}else{
 
-			var addarr=size.split(" ");
-			var sizelist=new Array();
+				if(size=='均码'){
+				addInfo.size='均码';
+				}else{
 
-			sizelist[0]='xs';
-			sizelist[1]='s';
-			sizelist[2]='m';
-			sizelist[3]='l';
-			sizelist[4]='xl';
-			sizelist[5]='2xl';
-			sizelist[6]='3xl';
-			sizelist[7]='4xl';
-			sizelist[8]='5xl';
-			sizelist[9]='6xl';
-			var sizestrat;
-			var sizeend;
-			for(var i=0;i<sizelist.length;i++){
-				if(addarr[0].toLowerCase()==sizelist[i]){
-					sizestrat=i;
-					continue;
-				}
-				if(addarr[1].toLowerCase()==sizelist[i]){
-					sizeend=i;
-					continue;
-				}
-			}
-			// alert(sizelist.slice(sizestrat,sizeend+1).toString());
-		
-		
 			
-		
-			addInfo.size=sizelist.slice(sizestrat,sizeend+1).toString();	
+					var sizelist=new Array();
 
+					sizelist[0]='XS';
+					sizelist[1]='S';
+					sizelist[2]='M';
+					sizelist[3]='L';
+					sizelist[4]='XL';
+					sizelist[5]='2XL';
+					sizelist[6]='3XL';
+					sizelist[7]='4XL';
+					sizelist[8]='5XL';
+					sizelist[9]='6XL';
+					var sizestrat;
+					var sizeend;
+					for(var i=0;i<sizelist.length;i++){
+						if(arrsize[0].toUpperCase()==sizelist[i]){
+							sizestrat=i;
+							continue;
+						}
+						if(arrsize[1].toUpperCase()==sizelist[i]){
+							sizeend=i;
+							continue;
+						}
+					}
+				// alert(sizelist.slice(sizestrat,sizeend+1).toString());
+			
+			
+				
+			
+					addInfo.size=sizelist.slice(sizestrat,sizeend+1).toString();	
+
+				}
 			}
+
+			
+			
 
 			
 		}
 
+		alert(addInfo.size)
+		return;
 		var color=$api.byId('color').value;
 		var arrcolor=color.split(" ");
 		 addInfo.color=arrcolor.toString()
