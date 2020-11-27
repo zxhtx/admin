@@ -17,7 +17,8 @@
 	}
 	table.gridtable th {
 		border-width: 1px;
-		padding: 8px;
+		padding: 3px;
+		width: 39px;
 		/*border-style: solid;*/
 		border-color: #666666;
 		background-color: #dedede;
@@ -94,7 +95,7 @@
 		</tr>
 		<tr>
 			<th>码数</th>
-			<td><input type="text" id="size"></td>
+			<td><input type="text" id="size" placeholder="(填充)29 32；(填充)S XXL；(不填充)90cm长裤 100cm长。"></td>
 			
 		</tr>
 
@@ -201,17 +202,13 @@
 
 	}
 	
-	function isNumber(val) {
-　　  if (parseFloat(val).toString() == "NaN") {
-　　　　
-　　  　　return false;
-　　     } else {
-　　　　　return true;
-　　   }
-	}
+
 	function uploadAtavar(_data,number){
 		
-
+		if(!addInfo.wareTypeId){
+			alert('请选择商品所属类');
+			return;
+		}
 		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
 			var size=$api.byId('size').value;
 			var arrsize=size.split(" ");
@@ -228,9 +225,10 @@
 			var size=$api.byId('size').value;
 			var arrsize=size.split(" ");
 
-
-			if(isNumber(arrsize[0]) && isNumber(arrsize[1]) ){
-
+			
+			if(/^\d+$/.test(arrsize[0]) && /^\d+$/.test(arrsize[1]) ){
+				// 是否为数字
+				
 				var start=arrsize[0];
 				var end=arrsize[1];
 				var addarrsizelist=[];
@@ -239,12 +237,11 @@
 				};
 
 	            addInfo.size=addarrsizelist.toString();
-    				
-			}else{
+    		
 
-				if(size=='均码'){
-				addInfo.size='均码';
-				}else{
+			}else if(/^[a-zA-Z]+$/.test(arrsize[0]) && /^[a-zA-Z]+$/.test(arrsize[1]) ){
+					// 判断是否为字母smlxl...
+									
 
 			
 					var sizelist=new Array();
@@ -254,11 +251,11 @@
 					sizelist[2]='M';
 					sizelist[3]='L';
 					sizelist[4]='XL';
-					sizelist[5]='2XL';
-					sizelist[6]='3XL';
-					sizelist[7]='4XL';
-					sizelist[8]='5XL';
-					sizelist[9]='6XL';
+					sizelist[5]='XXL';
+					sizelist[6]='XXXL';
+					sizelist[7]='XXXXL';
+					sizelist[8]='XXXXXL';
+					sizelist[9]='XXXXXXL';
 					var sizestrat;
 					var sizeend;
 					for(var i=0;i<sizelist.length;i++){
@@ -278,7 +275,11 @@
 			
 					addInfo.size=sizelist.slice(sizestrat,sizeend+1).toString();	
 
-				}
+				
+			}else{
+				// 否则为汉字或者汉字数字英文结合
+				addInfo.size=arrsize.toString();
+
 			}
 
 			
@@ -286,9 +287,11 @@
 
 			
 		}
-
-		// alert(addInfo.size)
-		// return;
+		if (!addInfo.size){
+		  alert('尺寸有误')
+		  return;
+		}
+		
 		var color=$api.byId('color').value;
 		var arrcolor=color.split(" ");
 		 addInfo.color=arrcolor.toString()
