@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<title>title</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<style>
+	html,body{
+		color: black;
+	}
+	table.gridtable {
+		width: 100%;
+		/*font-family: verdana,arial,sans-serif;*/
+		font-size:11px;
+		color:black;
+		border-width: 1px;
+		border-color: #666666;
+		/*border-collapse: collapse;*/
+	}
+	table.gridtable th {
+		border-width: 1px;
+		padding: 8px;
+		/*border-style: solid;*/
+		border-color: #666666;
+		background-color: #dedede;
+	}
+	table.gridtable td {
+		border-width: 1px;
+		padding:6px 0 6px 0;
+		border-style: solid;
+		border-color: #666666;
+		background-color: #fff;
+	}
+	.img{
+		width: 100px;
+		height: 100px;
+	}
+</style>
+</head>
+<body>
+	<table class="gridtable" id="list">
+	
+	</table>
+
+</body>
+<script type="text/template" id="template">
+<tr><th>图片</th><th>简介</th><th>是否删除</th></tr>
+	{{~it:value:index}}
+	
+	<tr class="black tr_{{=value.bid}}">
+		<td><img class="img" src="{{=value.image}}"></td>
+		<td>{{=value.description}}</td>
+		<td class="red" tapmode onclick="del('{{=value.bid}}')">删除</td>
+	</tr>
+
+
+	{{~}} 
+
+</script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/doT.min.js"></script>
+<!-- <script type="text/javascript" src="../script/SHA1.js"></script> -->
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+<script type="text/javascript">
+	var activity;
+	
+	var skip=0;
+	var LIMIT=18;
+	var userInfo;
+	apiready = function(){
+		userInfo = $api.getStorage('userInfo');
+		getAddressList();
+		initEventListenter();
+		
+	};
+	function getAddressList(_LoadMore){
+		if (_LoadMore) {
+			skip+=LIMIT;
+		}else{
+
+			skip=0;
+		}
+		
+
+		
+	 var params={
+	     	skip:skip,
+	     	limit:LIMIT,
+	     	userid:userInfo.id,
+	     }
+
+    
+      
+      api.ajax({
+      	url: 'http://api.chaodashe.com/index.php/adminallware',
+      	method: 'get',
+      	data:{values:params},
+      	headers:{'Token':$api.getStorage('token')},
+      },function(ret, err){
+      	if (ret.code==200) {
+         // 模板渲染
+        // alert($api.jsonToStr(ret))
+
+         updateWareList(ret.data,_LoadMore);
+         // alert($api.jsonToStr(ret))
+
+     } else {
+     	
+     	api.toast({
+     		msg:ret.message,
+     		duration: 3000,
+     		location: 'bottom'
+     	});
+     	// api.closeWin();
+     }
+ });
+  }
+  function updateWareList(_data,_LoadMore){
+  	var list=$api.byId('list');
+  	var tempFn=doT.template($api.byId('template').innerHTML);
+  	var resultText=tempFn(_data)
+  if (_LoadMore) {
+    $api.append(list, resultText);
+}else{
+    $api.html(list, resultText);
+}
+    api.parseTapmode();
+  
+}
+
+
+function del(id){
+	 var params={
+	     	wareid:id,
+	     	userid:userInfo.id,
+	     }
+	     // alert(params.wareid)
+
+	  api.ajax({
+      	url: 'http://api.chaodashe.com/index.php/admindelware',
+      	method:'post',
+      	data:{values:params},
+      	headers:{'Token':$api.getStorage('token')},
+      },function(ret, err){
+      	// alert($api.jsonToStr(ret))
+      	if (ret.code==200) {
+         // 模板渲染
+         $('.tr_'+id).remove();
+        	api.toast({
+        	    msg: ret.message
+        	});
+
+     } else {
+     		api.toast({
+        	    msg: ret.message
+        	});
+
+     }
+ });
+}
+// 监听 
+function initEventListenter(){
+	api.addEventListener({
+		name:'scrolltobottom',
+		extra:{
+			threshold:100
+		}
+	}, function(ret, err){       
+	if(is_search==0){
+		getAddressList(true);
+	} 
+		
+	});
+	api.addEventListener({
+	    name: 'selectdanhao'
+	}, function(ret, err) {
+	    if (ret) {
+	        // alert(JSON.stringify(ret));
+	        search(ret.value.danhao)
+	    } 
+	});
+}
+var is_search=0;
+function search(dindandanhao){
+	 var params={
+     	userid:userInfo.id,
+     	danhao:dindandanhao
+		}
+   
+  
+      api.ajax({
+      	url: 'http://api.chaodashe.com/index.php/searchshopping',
+      	method: 'get',
+      	data:{values:params},
+      	headers:{'Token':$api.getStorage('token')},
+      },function(ret, err){
+      	// alert($api.jsonToStr(ret))
+      	if (ret.code==200) {
+         // 模板渲染
+        is_search=1;
+         updateWareList(ret.data,false);
+         // alert($api.jsonToStr(ret))
+
+     } else {
+     	
+     	api.toast({
+     		msg:ret.message,
+     		duration: 3000,
+     		location: 'bottom'
+     	});
+     
+     	
+     }
+ });
+}
+
+
+
+
+</script>
+</html>
