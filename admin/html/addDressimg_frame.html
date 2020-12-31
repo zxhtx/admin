@@ -171,7 +171,7 @@
 			// var img1=$api.byId('imglist');
 			var UIAlbumBrowser = api.require('UIAlbumBrowser');
 			UIAlbumBrowser.open({
-				max: 8,
+				max: 12,
 				styles: {
 					bg: '#fff',
 					mark: {
@@ -348,7 +348,7 @@
 			UIActionProgress = api.require('UIActionProgress');
 			openload();
 			var text = $api.byId('text').value;
-			var des = text.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
+			var des = text.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;');
 			addInfo.text = des;
 			addInfo.userid = userInfo.id;
 			api.ajax({

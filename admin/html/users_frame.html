@@ -42,31 +42,22 @@
 	</table>
 </body>
 <script type="text/template" id="template">
-<tr><th>index</th> <th>用户</th><th>推荐人数</th><th>vip</th><th>vip时间</th><th>删除</th></tr>
+<tr> <th>账号</th><th>用户名</th><th>性别</th><th>邮箱</th><th>注册时间</th><th>潮贝</th><th>余额</th></tr>
 	{{~it:value:index}}
 
 	<tr>
-		<td>{{=index+1}}</td>
+		
 		<td >{{=value.username}}</td>
-		{{? value.count==undefined}}
-		<td  tapmode onclick="add('{{=value.id}}','{{=value.count}}')">0</td>
-		{{??}}
-		<td  tapmode onclick="add('{{=value.id}}','{{=value.count}}')">{{=value.count}}</td>
-		{{?}}
-
-		{{? value.vip==undefined}}
-		<td  tapmode onclick="addtwo('{{=value.id}}','{{=value.vip}}')">0</td>
-		{{??}}
-		<td  tapmode onclick="addtwo('{{=value.id}}','{{=value.vip}}')">{{=value.vip}}</td>
-		{{?}}
-
-		{{? value.date==undefined}}
-		<td  tapmode onclick="adddate('{{=value.id}}','{{=value.date}}')">0</td>
-		{{??}}
-		<td  tapmode onclick="adddate('{{=value.id}}','{{=value.date}}')">{{=value.date}}</td>
-		{{?}}
-
-		<td class="red" tapmode onclick="no('{{=value.id}}')">删除</td>
+		<td >{{=value.name}}</td>
+		{{ if(value.sex==0){ }}
+			<td >男</td>
+		{{ }else{ }}
+			<td >女</td>
+		{{ } }}
+		<td>{{=value.email}}</td>
+		<td>{{!timestampFormat('{{=value.addtime}}')}}</td>
+		<td>{{=value.cb}}</td>
+		<td>{{=value.balance}}</td>
 	</tr>
 	{{~}}
 
@@ -75,376 +66,428 @@
 <script type="text/javascript" src="../script/SHA1.js"></script>
 <script type="text/javascript" src="../script/doT.min.js"></script>
 <script type="text/javascript">
+	var skip=0;
+	var limit=18;
+	var userInfo;
 	apiready = function(){
-		user();
+		userInfo=$api.getStorage('userInfo');
+		userlist();
+		initEventListenter();
 	};
-	var now = Date.now();
-      //5FB51794-FCDC-1FE9-19E0-xxxxxxxxxxxx换成自己appkey
-      var appKey = SHA1("A6099267504667"+"UZ"+"8FC0173C-B395-B797-D516-7A6CD23939B3"+"UZ"+now)+"."+now
-      function user(val){
-
-      	var params={
-      		fields:{},
-      		fields: {},
-      		where:{
-      		},
-      		skip:0,
-      		limit:999999
+      function userlist(_LoadMore){
+      	if (_LoadMore) {
+      		skip+=limit;
+      	}else{
+      		skip=0;
       	}
-      	params=$api.jsonToStr(params);
-      	api.ajax({
-      		url: 'https://d.apicloud.com/mcm/api/user?filter='+params,
-      		method: 'get',
-      		headers: {
-      			"X-APICloud-AppId": "A6099267504667",
-      			"X-APICloud-AppKey":   appKey
-      		},
+      	var params={
+      		skip:skip,
+      		limit:limit,
+      		userid:userInfo.id
 
-      	},function(ret, err){
-      		if (ret) {
-          // 隐藏下拉刷新
-          // api.refreshHeaderLoadDone();
-         // 模板渲染
-         updateWareList(ret);
-     } else {
-     	api.toast({
-     		msg: err.msg,
-     		duration: 2000,
-     		location: 'bottom'
-     	});
-     }
- });
+      	}
+       
+	      api.ajax({
+	      	url: 'http://api.chaodashe.com/index.php/getAlluser',
+	      	method: 'get',
+	      	data:{values:params},
+	      	headers:{'Token':$api.getStorage('token')},
+	      },function(ret, err){
+	      	// alert($api.jsonToStr(ret))
+	      	if (ret.code==200) {
+	      	
+	          // 隐藏下拉刷新
+	          // api.refreshHeaderLoadDone();
+	         // 模板渲染
+	         updateWareList(ret.data.user,_LoadMore);
+	         api.sendEvent({
+	             name: 'updateusercount',
+	             extra: {
+	                 value: ret.data.count,
+	             }
+	         });
+	   		 } else {
+	     		api.toast({
+	     			msg: ret.message,
+	     			duration: 2000,
+	     			location: 'bottom'
+		     		});
+		  }
+		 });
       }
-      function updateWareList(_data){
+      function updateWareList(_data,_LoadMore){
       	var list=$api.byId('list');
       	var tempFn=doT.template($api.byId('template').innerHTML);
       	var resultText=tempFn(_data)
-  	// if (_LoadMore) {
-  		// $api.append(list, resultText);
-  	// }else{
+      	// alert(resultText);
+  	if (_LoadMore) {
+  		$api.append(list, resultText);
+  	}else{
   		$api.html(list, resultText);
-  	// }
+  	}
     // 优化
-    api.parseTapmode();
-}
-function no(_id){
-	api.confirm({
-		title: '提示',
-		msg: '确定删除?',
-		buttons: ['确定', '取消']
-	}, function(ret, err){
-		if( ret.buttonIndex==1 ){
-			api.ajax({
-				url: 'http://d.apicloud.com/mcm/api/user/'+_id,
-				method: 'delete',
-				headers: {
-					"X-APICloud-AppId": "A6099267504667",
-					"X-APICloud-AppKey":   appKey
-				},
-
-			},function(ret, err){
-				if (ret) {
-					user();
-				} 
-			});
-
-		}else{
-			return;
-		}
-	});
-
+    // api.parseTapmode();
 }
 
-function add(_id,_count){
-	if (_count==undefined) {
-		_count=0;
+function timestampFormat( timestamp ) {
+  function zeroize( num ) {
+      return (String(num).length == 1 ? '0' : '') + num;
+  }
 
-	}
-	var dialogBox = api.require('dialogBox');
-	dialogBox.input({
-		keyboardType: 'default',
-		texts: {
-			title: '数量',
-			placeholder: _count,
-			leftBtnTitle: '确定',
-			rightBtnTitle: '取消'
-		},
-		styles: {
-			bg: '#fff',
-			corner: 2,
-			w: 300,
-			h: 240,
-			title: {
-				h: 60,
-				alignment: 'center',
-				size: 14,
-				color: '#000',
-				marginT:30,
-			},
-			input: {
-				h: 60,
-				y:30,
-				marginT:15,
-				marginLeft: 10,
-				marginRight:10,
-				textSize: 14,
-				textColor: '#000'
-			},
-			dividingLine: {
-				width: 0.5,
-				color: '#696969'
-			},
-			left: {
-				bg: 'rgba(0,0,0,0)',
-				color: '#007FFF',
-				size: 12
-			},
-			right: {
-				bg: 'rgba(0,0,0,0)',
-				color: '#007FFF',
-				size: 12
-			}
-		}
-	}, function(ret) {
-		if (ret.eventType == 'left') {
-			var dialogBox = api.require('dialogBox');
-			createcount(_id,ret.text)
-			dialogBox.close({
-				dialogName: 'input'
-			});
-		}else{
-			var dialogBox = api.require('dialogBox');
-			dialogBox.close({
-				dialogName: 'input'
-			});
+  var curTimestamp = parseInt(new Date().getTime() / 1000); //当前时间戳
+  var timestampDiff = curTimestamp - timestamp; // 参数时间戳与当前时间戳相差秒数
 
+  var curDate = new Date( curTimestamp * 1000 ); // 当前时间日期对象
+  var tmDate = new Date( timestamp * 1000 );  // 参数时间戳转换成的日期对象
+
+  var Y = tmDate.getFullYear(), m = tmDate.getMonth() + 1, d = tmDate.getDate();
+  var H = tmDate.getHours(), i = tmDate.getMinutes(), s = tmDate.getSeconds();
+
+  if ( timestampDiff < 60 ) { // 一分钟以内
+      return "刚刚";
+  } else if( timestampDiff < 3600 ) { // 一小时前之内
+      return Math.floor( timestampDiff / 60 ) + "分钟前";
+  } else if ( curDate.getFullYear() == Y && curDate.getMonth()+1 == m && curDate.getDate() == d ) {
+      return '今天' + zeroize(H) + ':' + zeroize(i);
+  } else {
+      var newDate = new Date( (curTimestamp - 86400) * 1000 ); // 参数中的时间戳加一天转换成的日期对象
+      if ( newDate.getFullYear() == Y && newDate.getMonth()+1 == m && newDate.getDate() == d ) {
+          return '昨天' + zeroize(H) + ':' + zeroize(i);
+      } else if ( curDate.getFullYear() == Y ) {
+          return  zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+      } else {
+          return  Y + '年' + zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+      }
+  }
+}
+function initEventListenter(){
+	api.addEventListener({
+		name:'scrolltobottom',
+		extra:{
+			threshold:100
 		}
+	}, function(ret, err){        
+		userlist(true);
 	});
 }
+// function no(_id){
+// 	api.confirm({
+// 		title: '提示',
+// 		msg: '确定删除?',
+// 		buttons: ['确定', '取消']
+// 	}, function(ret, err){
+// 		if( ret.buttonIndex==1 ){
+// 			api.ajax({
+// 				url: 'http://d.apicloud.com/mcm/api/user/'+_id,
+// 				method: 'delete',
+// 				headers: {
+// 					"X-APICloud-AppId": "A6099267504667",
+// 					"X-APICloud-AppKey":   appKey
+// 				},
 
-function createcount(_id,_count){
+// 			},function(ret, err){
+// 				if (ret) {
+// 					user();
+// 				} 
+// 			});
 
-	api.ajax({
-		url: 'https://d.apicloud.com/mcm/api/user/'+_id,
-		method: 'put',
-		data: {
-			values:{
-				"count":_count,
-			}
-		},
-		headers: {
-			"X-APICloud-AppId": "A6099267504667",
-			"X-APICloud-AppKey":   appKey,
-		}
-	},function(ret, err){
-		if (ret) {
-			api.toast({
-				msg: '欧克了',
-				duration: 2000,
-				location: 'bottom'
-			});
-			user();
+// 		}else{
+// 			return;
+// 		}
+// 	});
+
+// }
+
+// function add(_id,_count){
+// 	if (_count==undefined) {
+// 		_count=0;
+
+// 	}
+// 	var dialogBox = api.require('dialogBox');
+// 	dialogBox.input({
+// 		keyboardType: 'default',
+// 		texts: {
+// 			title: '数量',
+// 			placeholder: _count,
+// 			leftBtnTitle: '确定',
+// 			rightBtnTitle: '取消'
+// 		},
+// 		styles: {
+// 			bg: '#fff',
+// 			corner: 2,
+// 			w: 300,
+// 			h: 240,
+// 			title: {
+// 				h: 60,
+// 				alignment: 'center',
+// 				size: 14,
+// 				color: '#000',
+// 				marginT:30,
+// 			},
+// 			input: {
+// 				h: 60,
+// 				y:30,
+// 				marginT:15,
+// 				marginLeft: 10,
+// 				marginRight:10,
+// 				textSize: 14,
+// 				textColor: '#000'
+// 			},
+// 			dividingLine: {
+// 				width: 0.5,
+// 				color: '#696969'
+// 			},
+// 			left: {
+// 				bg: 'rgba(0,0,0,0)',
+// 				color: '#007FFF',
+// 				size: 12
+// 			},
+// 			right: {
+// 				bg: 'rgba(0,0,0,0)',
+// 				color: '#007FFF',
+// 				size: 12
+// 			}
+// 		}
+// 	}, function(ret) {
+// 		if (ret.eventType == 'left') {
+// 			var dialogBox = api.require('dialogBox');
+// 			createcount(_id,ret.text)
+// 			dialogBox.close({
+// 				dialogName: 'input'
+// 			});
+// 		}else{
+// 			var dialogBox = api.require('dialogBox');
+// 			dialogBox.close({
+// 				dialogName: 'input'
+// 			});
+
+// 		}
+// 	});
+// }
+
+// function createcount(_id,_count){
+
+// 	api.ajax({
+// 		url: 'https://d.apicloud.com/mcm/api/user/'+_id,
+// 		method: 'put',
+// 		data: {
+// 			values:{
+// 				"count":_count,
+// 			}
+// 		},
+// 		headers: {
+// 			"X-APICloud-AppId": "A6099267504667",
+// 			"X-APICloud-AppKey":   appKey,
+// 		}
+// 	},function(ret, err){
+// 		if (ret) {
+// 			api.toast({
+// 				msg: '欧克了',
+// 				duration: 2000,
+// 				location: 'bottom'
+// 			});
+// 			user();
 
 			
 			
-		} 
-	});
+// 		} 
+// 	});
 
-}
+// }
 
 
-function addtwo(_id,_vip){
-	if (_vip==undefined) {
-		_vip=0;
+// function addtwo(_id,_vip){
+// 	if (_vip==undefined) {
+// 		_vip=0;
 
-	}
-	var dialogBox = api.require('dialogBox');
-	dialogBox.input({
-		keyboardType: 'default',
-		texts: {
-			title: '数量',
-			placeholder: _vip,
-			leftBtnTitle: '确定',
-			rightBtnTitle: '取消'
-		},
-		styles: {
-			bg: '#fff',
-			corner: 2,
-			w: 300,
-			h: 240,
-			title: {
-				h: 60,
-				alignment: 'center',
-				size: 14,
-				color: '#000',
-				marginT:30,
-			},
-			input: {
-				h: 60,
-				y:30,
-				marginT:15,
-				marginLeft: 10,
-				marginRight:10,
-				textSize: 14,
-				textColor: '#000'
-			},
-			dividingLine: {
-				width: 0.5,
-				color: '#696969'
-			},
-			left: {
-				bg: 'rgba(0,0,0,0)',
-				color: '#007FFF',
-				size: 12
-			},
-			right: {
-				bg: 'rgba(0,0,0,0)',
-				color: '#007FFF',
-				size: 12
-			}
-		}
-	}, function(ret) {
-		if (ret.eventType == 'left') {
-			var dialogBox = api.require('dialogBox');
-			createvip(_id,ret.text)
-			dialogBox.close({
-				dialogName: 'input'
-			});
-		}else{
-			var dialogBox = api.require('dialogBox');
-			dialogBox.close({
-				dialogName: 'input'
-			});
+// 	}
+// 	var dialogBox = api.require('dialogBox');
+// 	dialogBox.input({
+// 		keyboardType: 'default',
+// 		texts: {
+// 			title: '数量',
+// 			placeholder: _vip,
+// 			leftBtnTitle: '确定',
+// 			rightBtnTitle: '取消'
+// 		},
+// 		styles: {
+// 			bg: '#fff',
+// 			corner: 2,
+// 			w: 300,
+// 			h: 240,
+// 			title: {
+// 				h: 60,
+// 				alignment: 'center',
+// 				size: 14,
+// 				color: '#000',
+// 				marginT:30,
+// 			},
+// 			input: {
+// 				h: 60,
+// 				y:30,
+// 				marginT:15,
+// 				marginLeft: 10,
+// 				marginRight:10,
+// 				textSize: 14,
+// 				textColor: '#000'
+// 			},
+// 			dividingLine: {
+// 				width: 0.5,
+// 				color: '#696969'
+// 			},
+// 			left: {
+// 				bg: 'rgba(0,0,0,0)',
+// 				color: '#007FFF',
+// 				size: 12
+// 			},
+// 			right: {
+// 				bg: 'rgba(0,0,0,0)',
+// 				color: '#007FFF',
+// 				size: 12
+// 			}
+// 		}
+// 	}, function(ret) {
+// 		if (ret.eventType == 'left') {
+// 			var dialogBox = api.require('dialogBox');
+// 			createvip(_id,ret.text)
+// 			dialogBox.close({
+// 				dialogName: 'input'
+// 			});
+// 		}else{
+// 			var dialogBox = api.require('dialogBox');
+// 			dialogBox.close({
+// 				dialogName: 'input'
+// 			});
 
-		}
-	});
-}
+// 		}
+// 	});
+// }
 
-function createvip(_id,_vip){
+// function createvip(_id,_vip){
 
-	api.ajax({
-		url: 'https://d.apicloud.com/mcm/api/user/'+_id,
-		method: 'put',
-		data: {
-			values:{
-				"vip":_vip,
-			}
-		},
-		headers: {
-			"X-APICloud-AppId": "A6099267504667",
-			"X-APICloud-AppKey":   appKey,
-		}
-	},function(ret, err){
-		if (ret) {
-			api.toast({
-				msg: '欧克了',
-				duration: 2000,
-				location: 'bottom'
-			});
-			user();
-
-			
-			
-		} 
-	});
-
-}
-
-function adddate(_id,_date){
-	if (_date==undefined) {
-		_date=0;
-
-	}
-	var dialogBox = api.require('dialogBox');
-	dialogBox.input({
-		keyboardType: 'default',
-		texts: {
-			title: '数量',
-			placeholder: _date,
-			leftBtnTitle: '确定',
-			rightBtnTitle: '取消'
-		},
-		styles: {
-			bg: '#fff',
-			corner: 2,
-			w: 300,
-			h: 240,
-			title: {
-				h: 60,
-				alignment: 'center',
-				size: 14,
-				color: '#000',
-				marginT:30,
-			},
-			input: {
-				h: 60,
-				y:30,
-				marginT:15,
-				marginLeft: 10,
-				marginRight:10,
-				textSize: 14,
-				textColor: '#000'
-			},
-			dividingLine: {
-				width: 0.5,
-				color: '#696969'
-			},
-			left: {
-				bg: 'rgba(0,0,0,0)',
-				color: '#007FFF',
-				size: 12
-			},
-			right: {
-				bg: 'rgba(0,0,0,0)',
-				color: '#007FFF',
-				size: 12
-			}
-		}
-	}, function(ret) {
-		if (ret.eventType == 'left') {
-			var dialogBox = api.require('dialogBox');
-			createdate(_id,ret.text)
-			dialogBox.close({
-				dialogName: 'input'
-			});
-		}else{
-			var dialogBox = api.require('dialogBox');
-			dialogBox.close({
-				dialogName: 'input'
-			});
-
-		}
-	});
-}
-
-function createdate(_id,_date){
-
-	api.ajax({
-		url: 'https://d.apicloud.com/mcm/api/user/'+_id,
-		method: 'put',
-		data: {
-			values:{
-				"date":_date,
-			}
-		},
-		headers: {
-			"X-APICloud-AppId": "A6099267504667",
-			"X-APICloud-AppKey":   appKey,
-		}
-	},function(ret, err){
-		if (ret) {
-			api.toast({
-				msg: '欧克了',
-				duration: 2000,
-				location: 'bottom'
-			});
-			user();
+// 	api.ajax({
+// 		url: 'https://d.apicloud.com/mcm/api/user/'+_id,
+// 		method: 'put',
+// 		data: {
+// 			values:{
+// 				"vip":_vip,
+// 			}
+// 		},
+// 		headers: {
+// 			"X-APICloud-AppId": "A6099267504667",
+// 			"X-APICloud-AppKey":   appKey,
+// 		}
+// 	},function(ret, err){
+// 		if (ret) {
+// 			api.toast({
+// 				msg: '欧克了',
+// 				duration: 2000,
+// 				location: 'bottom'
+// 			});
+// 			user();
 
 			
 			
-		} 
-	});
+// 		} 
+// 	});
 
-}
+// }
+
+// function adddate(_id,_date){
+// 	if (_date==undefined) {
+// 		_date=0;
+
+// 	}
+// 	var dialogBox = api.require('dialogBox');
+// 	dialogBox.input({
+// 		keyboardType: 'default',
+// 		texts: {
+// 			title: '数量',
+// 			placeholder: _date,
+// 			leftBtnTitle: '确定',
+// 			rightBtnTitle: '取消'
+// 		},
+// 		styles: {
+// 			bg: '#fff',
+// 			corner: 2,
+// 			w: 300,
+// 			h: 240,
+// 			title: {
+// 				h: 60,
+// 				alignment: 'center',
+// 				size: 14,
+// 				color: '#000',
+// 				marginT:30,
+// 			},
+// 			input: {
+// 				h: 60,
+// 				y:30,
+// 				marginT:15,
+// 				marginLeft: 10,
+// 				marginRight:10,
+// 				textSize: 14,
+// 				textColor: '#000'
+// 			},
+// 			dividingLine: {
+// 				width: 0.5,
+// 				color: '#696969'
+// 			},
+// 			left: {
+// 				bg: 'rgba(0,0,0,0)',
+// 				color: '#007FFF',
+// 				size: 12
+// 			},
+// 			right: {
+// 				bg: 'rgba(0,0,0,0)',
+// 				color: '#007FFF',
+// 				size: 12
+// 			}
+// 		}
+// 	}, function(ret) {
+// 		if (ret.eventType == 'left') {
+// 			var dialogBox = api.require('dialogBox');
+// 			createdate(_id,ret.text)
+// 			dialogBox.close({
+// 				dialogName: 'input'
+// 			});
+// 		}else{
+// 			var dialogBox = api.require('dialogBox');
+// 			dialogBox.close({
+// 				dialogName: 'input'
+// 			});
+
+// 		}
+// 	});
+// }
+
+// function createdate(_id,_date){
+
+// 	api.ajax({
+// 		url: 'https://d.apicloud.com/mcm/api/user/'+_id,
+// 		method: 'put',
+// 		data: {
+// 			values:{
+// 				"date":_date,
+// 			}
+// 		},
+// 		headers: {
+// 			"X-APICloud-AppId": "A6099267504667",
+// 			"X-APICloud-AppKey":   appKey,
+// 		}
+// 	},function(ret, err){
+// 		if (ret) {
+// 			api.toast({
+// 				msg: '欧克了',
+// 				duration: 2000,
+// 				location: 'bottom'
+// 			});
+// 			user();
+
+			
+			
+// 		} 
+// 	});
+
+// }
 </script>
 </html>

@@ -47,26 +47,33 @@
 	.black{
 		color: black;
 	}
+	.purple{
+		color: purple;
+		font-weight: bold;
+		/*color: black;*/
+	}
 </style>
 </head>
 <body>
 	<table class="gridtable" id="list">
-	<tr><th>是否支付</th><th>类型</th><th>订单号</th><th>商品</th><th>原价</th><th>支付价格</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>商品图</th><th>理由</th></tr>
+	
 	</table>
 
 </body>
 <script type="text/template" id="template">
-
+	<tr><th>是否支付</th><th>类型</th><th>订单号</th><th>商品</th><th>原价</th><th>支付价格</th><th>实际支付</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>商品图</th><th>理由</th></tr>
 	{{~it:value:index}}
 	{{? value.dindantypeid=='5c2a39add37a824c5ac6cc65'}}
 	<tr class="black">
-		{{? value.newprice== value.oldprice- value.cb/100 - value.dandanjian && value.paytime}}
-		<td class="green">已支付</td>
+		{{? value.newprice== value.oldprice- value.cb/100 - value.dandanjian && value.paytime && value.paymoney}}
+			<td class="green">已支付</td>
 		{{?? value.gwqid!=0}}
 			<td class="green">购物券下单</td>
-		{{??}}
-			<td class="red">未支付(交易金额错误)</td>
-		{{?}}	
+		{{?? value.newprice!= value.oldprice- value.cb/100 - value.dandanjian}}
+			<td class="red">交易金额被篡改</td>
+		{{?? value.newprice== value.oldprice- value.cb/100 - value.dandanjian && value.paytime==0 && value.paymoney==0.00}}
+			<td class="red">未支付</td>
+		{{?}}
 
 		{{if(value.dindantypeid=='5c2a3991af3114d73d9ddfc2'){}}
 
@@ -90,6 +97,7 @@
 		<td tapmode onclick="fuzhi('{{=value.description}}')" >{{=value.description}}</td>
 		<td class="blue">{{=value.oldprice}}</td>
 		<td class="blue">{{=value.newprice}}</td>
+		<td class="purple">{{=value.paymoney}}</td>
 		<td class="red">{{=value.color}}</td>
 		<td class="red">{{=value.size}}</td>
 		
@@ -191,10 +199,11 @@
   	var list=$api.byId('list');
   	var tempFn=doT.template($api.byId('template').innerHTML);
   	var resultText=tempFn(_data)
+  	
   if (_LoadMore) {
     $api.append(list, resultText);
 }else{
-    $api.append(list, resultText);
+    $api.html(list, resultText);
 }
     api.parseTapmode();
     activity.closeKeyFrame()
@@ -286,11 +295,55 @@ function initEventListenter(){
 		extra:{
 			threshold:100
 		}
-	}, function(ret, err){        
+	}, function(ret, err){     
+	if(is_search==0){   
 		getAddressList(true);
+	}
+	});
+
+	api.addEventListener({
+	    name: 'selectdanhao'
+	}, function(ret, err) {
+	    if (ret) {
+	        // alert(JSON.stringify(ret));
+	        search(ret.value.danhao)
+	    } 
 	});
 }
+var is_search=0;
+function search(dindandanhao){
+	 var params={
+     	userid:userInfo.id,
+     	type:'5c2a39add37a824c5ac6cc65',
+     	danhao:dindandanhao
+		}
+   
+  
+      api.ajax({
+      	url: 'http://api.chaodashe.com/index.php/searchhuanhuo',
+      	method: 'get',
+      	data:{values:params},
+      	headers:{'Token':$api.getStorage('token')},
+      },function(ret, err){
+      	// alert($api.jsonToStr(ret))
+      	if (ret.code==200) {
+         // 模板渲染
+          is_search=1;
+         updateWareList(ret.data,false);
+         // alert($api.jsonToStr(ret))
 
+     } else {
+     	
+     	api.toast({
+     		msg:ret.message,
+     		duration: 3000,
+     		location: 'bottom'
+     	});
+     
+     	
+     }
+ });
+}
 function saomiao(_id){
 	var FNScanner = api.require('FNScanner');
 	FNScanner.open({
@@ -307,33 +360,30 @@ function saomiao(_id){
 }
 function createdanhao(_id,_danhao){
 	
+var userInfo=$api.getStorage('userInfo');
+
 	api.ajax({
-		url: 'https://d.apicloud.com/mcm/api/shoppinginformation/'+_id,
-		method: 'put',
+		url:'http://api.chaodashe.com/index.php/updatedanhao',
+		method: 'post',
 		data: {
 			values:{
+				"shoppingid":_id,
 				"danhao":_danhao,
+				"userid":userInfo.id
 			}
 		},
-		headers: {
-			"X-APICloud-AppId": "A6099267504667",
-			"X-APICloud-AppKey":   appKey
-		}
+		headers:{'Token':$api.getStorage('token')},
 	},function(ret, err){
-		if (ret) {
+		alert($api.jsonToStr(ret))
+		if (ret.code==200) {
 			api.toast({
 				msg: '欧克了',
 				duration: 2000,
 				location: 'bottom'
 			});
-			setTimeout(function(){
 				getAddressList();
-			},2000)
-			
-			
 		} 
 	});
-
 
 }
 function openimgWin(_path){

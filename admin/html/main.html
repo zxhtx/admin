@@ -165,6 +165,7 @@
 	<section>
 		<div tapmode onclick="add()" class="add">添加数据</div>
 		<div tapmode onclick="addDressing()" class="addDressing">添加穿搭数据</div>
+		<div tapmode onclick="openuser()" class="users" style="color: blue;" >所有用户</div>
 		<div tapmode onclick="select_all()" class="select">所有订单</div>
 		<div tapmode onclick="select(1)" class="select green">已支付订单</div>
 		<div tapmode onclick="select(0)" class="select red">未支付订单</div>
@@ -311,6 +312,16 @@
 		api.openWin({
 		    name: 'login',
 		    url: './login.html',
+		    pageParam: {
+		        name: 'test'
+		    }
+		});
+	}
+
+	function openuser(){
+		api.openWin({
+		    name: 'users',
+		    url: './users.html',
 		    pageParam: {
 		        name: 'test'
 		    }
