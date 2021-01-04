@@ -177,6 +177,7 @@
 		<div tapmode onclick="openappversion()" class="del">版本更新</div>
 		<div tapmode onclick="gocdimgware()" class="del">穿搭链接审核</div>
 		<div tapmode onclick="gotixian()" class="del">提现操作</div>
+		<div  tapmode onclick="openjubao()" class="del" >举报列表</div>
 		<div tapmode onclick="login()" class="login">登录</div>
 		<div  tapmode onclick="loginout()" class="loginout">退出登录</div>
 	</section>
@@ -348,6 +349,16 @@
 		        name: 'test'
 		    }
 		});
+	}
+	function openjubao(){
+		api.openWin({
+		    name: 'Violation',
+		    url: './Violation.html',
+		    pageParam: {
+		        name: 'test'
+		    }
+		});
+
 	}
 	function loginout(){
 		 api.clearCache(function(){

@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+
+	<head>
+		<link rel="shortcut icon" href="../image/chao.ico" />
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的订单</title>
+ 		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<script type="text/javascript" src="../script/api.js"></script>
+		<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+ 		<script src="https://cdn.bootcss.com/dot/2.0.0-beta.0/doT.min.js"></script>
+		<style type="text/css">
+			body,
+			html {
+				padding: 0;
+				margin: 0;
+			}
+	table {
+		width: 100%;
+		/*font-family: verdana,arial,sans-serif;*/
+		font-size:11px;
+		color:black;
+		border-width: 1px;
+		border-color: #666666;
+		/*border-collapse: collapse;*/
+	}
+	table th {
+		border-width: 1px;
+		padding: 8px;
+		/*border-style: solid;*/
+		border-color: #666666;
+		background-color: #dedede;
+	}
+	table td {
+		border-width: 1px;
+		padding:6px 0 6px 0;
+		border-style: solid;
+		border-color: #666666;
+		background-color: #fff;
+	}
+
+			
+		</style>
+	</head>
+
+	<body>
+
+		<table id="list" class="list">
+
+		</table>
+		
+	</body>
+	<script type="text/template" id="templateDressing">	
+		<tr> <th>信息源</th><th>无违规</th><th>删除动态</th></tr>
+		{{~it.list:value:index}}
+			<tr>
+				<td tapmode onclick="openDressing('{{=value.Violationid}}')">查看详情</td>
+				<td>解除举报</td>
+				<td>违规删除</td>
+			</tr>
+		{{~}}
+
+
+	</script>
+
+	<script type="text/template" id="templateuser">
+		<tr> <th>信息源</th><th>无违规</th><th>封禁</th><th>短封</th></tr>
+		{{~it.list:value:index}}
+			<tr>
+				<td tapmode onclick="openuser('{{=value.Violationid}}')">查看用户</td>
+				<td>解除举报</td>
+				<td>封禁账号</td>
+				<td>封5天</td>
+			</tr>
+		{{~}}
+
+
+	</script>
+
+
+	<script type="text/javascript">
+		var userInfo;
+		var skip = 0;
+		var LIMIT = 20;
+		var off_on = false;
+		var typeList;
+		// var wareindex2 = 0;
+		// var wareindex;
+		apiready = function(){
+			userInfo=$api.getStorage('userInfo');
+			getAddressList(api.pageParam.nav,false);
+			// event();
+		}
+		    
+		window.addEventListener("scroll", function() {
+			//当时滚动条离底部0px时开始加载下一页的内容
+
+			if (($(window).height() + $(window).scrollTop() + 200) >= $(document).height()) {
+				if (off_on) {
+					off_on = false;
+					getAddressList(api.pageParam.nav, true);
+					// toast("动态加载中...",'bottom',1000);
+					$('.list').append('<div id="xuanzhun" class="xz" style="width: 30px; height: 30px; margin:0 auto; margin-top:12px; "></div>')
+				}
+
+
+			}
+		});
+
+	
+
+		
+		// 获取列表页数据
+		function getAddressList(_index, _LoadMore) {
+			
+			typeList = [{
+					type: "Dressing",
+					name: "动态"
+				},
+				{
+					type: "comment",
+					name: "评论"
+				},
+				{
+					type:"reply",
+					name: "回复"
+				},
+				{
+					type: "user",
+					name: "用户"
+				}
+			]
+			
+			if (_LoadMore) {
+				skip += LIMIT;
+			} else {
+				// dialog('订单加载中');
+				skip = 0;
+			}
+		
+			// alert(typeList[_index].type)
+			var params = {
+				type:typeList[_index].type,
+				userid: userInfo.id,
+				skip: skip,
+				limit: LIMIT,
+			}
+			 api.ajax({
+			     url: 'http://api.chaodashe.com/index.php/getreport',
+			     method: 'get',
+			     data: {
+			          values:params
+			        },
+			      headers:{'Token':$api.getStorage('token')},   
+			    }, function(ret, err) {
+			    	if(ret.code=='200'){
+			    		updateWareList(ret,_LoadMore);
+			    	}else{
+			    		$('.list').append('<p class="nodata" style=" text-align: center;color: #ddd;height: 50px;line-height: 50px;">-end-</p>');
+      				$('.xz').remove();
+			    	}
+			    
+			    })
+			
+
+		}
+
+
+		function updateWareList(ret,_LoadMore) {
+			var params={
+				list:ret.data,
+				imgurl:'http://api.chaodashe.com/'
+			}
+			if(ret.type=='Dressing'){
+				var tempFn = doT.template($('#templateDressing').text());
+			}else if(ret.type=='comment'){
+				var tempFn = doT.template($('#templatecomment').text());
+			}else if(ret.type=='reply'){
+				var tempFn = doT.template($('#templatereply').text());
+			}else if(ret.type=='user'){
+				var tempFn = doT.template($('#templateuser').text());
+			}	
+			
+			var resultText = tempFn(params);
+			// alert(resultText)
+			// dl.close();
+			if (resultText == 0) {
+				// toast('没有资源啦', 'bottom', 2000);
+
+			} else {
+				off_on = true;
+			}
+			if (_LoadMore) {
+				$('#list').append(resultText);
+			} else {
+				$('#list').html(resultText);
+			}
+
+
+			$('.xz').remove();
+			
+
+
+
+		}
+
+		// 列表页图片缓存
+
+
+		// 监听 
+		function jiazai() {
+
+			getAddressList(true);
+
+		}
+
+		function openDressing(id){
+			api.openWin({
+			    name: 'Dressing',
+			    url: 'http://www.chaodashe.com/html/Dressingdetails_frame.html?'+window.btoa(encodeURI('articleid='+id)),
+			    pageParam: {
+			        name: 'test'
+			    }
+			});
+			
+
+		}
+		function openuser(id){
+			api.openWin({
+			    name: 'Dressing',
+			    url: 'http://www.chaodashe.com/html/TAusercenter.html?'+window.btoa(encodeURI('uid='+id)),
+			    pageParam: {
+			        name: 'test'
+			    }
+			});
+			
+			// alert(id)
+
+		}
+	</script>
+
+</html>
