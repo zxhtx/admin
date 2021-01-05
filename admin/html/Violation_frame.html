@@ -39,8 +39,14 @@
 		border-style: solid;
 		border-color: #666666;
 		background-color: #fff;
+		max-width: 120px;
 	}
-
+	.green{
+		color: green;
+	}
+	.red{
+		color: red;
+	}
 			
 		</style>
 	</head>
@@ -55,10 +61,34 @@
 	<script type="text/template" id="templateDressing">	
 		<tr> <th>信息源</th><th>无违规</th><th>删除动态</th></tr>
 		{{~it.list:value:index}}
-			<tr>
+			<tr class='tr_{{=value.Violationid}}'>
 				<td tapmode onclick="openDressing('{{=value.Violationid}}')">查看详情</td>
-				<td>解除举报</td>
-				<td>违规删除</td>
+				<td class='green' tapmode onclick="jiechu('{{=value.Violationid}}')">解除举报</td>
+				<td class='red' tapmode onclick="delreport('{{=value.id}}','{{=value.Violationid}}','Dressing')">违规删除</td>
+			</tr>
+		{{~}}
+
+
+	</script>
+	<script type="text/template" id="templatecomment">
+		<tr> <th>信息</th><th>无违规</th><th>删除</th></tr>
+		{{~it.list:value:index}}
+			<tr  class='tr_{{=value.Violationid}}'>
+				<td >{{=value.msg}}</td>
+				<td class='green' tapmode onclick="jiechu('{{=value.Violationid}}')">解除举报</td>
+				<td class='red' tapmode onclick="delreport('{{=value.id}}','{{=value.Violationid}}','comment')">违规删除</td>
+			</tr>
+		{{~}}
+
+
+	</script>
+	<script type="text/template" id="templatereply">
+		<tr> <th>信息</th><th>无违规</th><th>删除</th></tr>
+		{{~it.list:value:index}}
+			<tr  class='tr_{{=value.Violationid}}'>
+				<td >{{=value.msg}}</td>
+				<td class='green' tapmode onclick="jiechu('{{=value.Violationid}}')">解除举报</td>
+				<td class='red' tapmode onclick="delreport('{{=value.id}}','{{=value.Violationid}}','reply')">违规删除</td>
 			</tr>
 		{{~}}
 
@@ -68,11 +98,11 @@
 	<script type="text/template" id="templateuser">
 		<tr> <th>信息源</th><th>无违规</th><th>封禁</th><th>短封</th></tr>
 		{{~it.list:value:index}}
-			<tr>
+			<tr  class='tr_{{=value.Violationid}}'>
 				<td tapmode onclick="openuser('{{=value.Violationid}}')">查看用户</td>
-				<td>解除举报</td>
-				<td>封禁账号</td>
-				<td>封5天</td>
+				<td class='green' tapmode onclick="jiechu('{{=value.Violationid}}')">解除举报</td>
+				<td class='red'>封禁账号</td>
+				<td class='red'>封5天</td>
 			</tr>
 		{{~}}
 
@@ -238,6 +268,57 @@
 			
 			// alert(id)
 
+		}
+		// 无违规解除举报
+		function jiechu(Violationid){
+			userInfo=$api.getStorage('userInfo');
+			 api.ajax({
+			     url: 'http://api.chaodashe.com/index.php/relievereport',
+			     method: 'post',
+			     data: {
+			          values:{'Violationid':Violationid,'userid':userInfo.id}
+			        },
+			      headers:{'Token':$api.getStorage('token')},   
+			    }, function(ret, err) {
+			    	if(ret.code=='200'){
+			    		api.toast({
+			    		    msg: ret.message
+			    		});
+			    		$('.tr_'+Violationid).remove();
+			    	}else{
+			    		api.toast({
+			    		    msg: ret.message
+			    		});
+			    
+			    	}
+			    
+			    })
+			
+		}	
+
+		function delreport(id,Violationid,type){
+			userInfo=$api.getStorage('userInfo');
+			 api.ajax({
+			     url: 'http://api.chaodashe.com/index.php/delreport',
+			     method: 'post',
+			     data: {
+			          values:{'id':id,'type':type,'Violationid':Violationid,'userid':userInfo.id}
+			        },
+			      headers:{'Token':$api.getStorage('token')},   
+			    }, function(ret, err) {
+			    	if(ret.code=='200'){
+			    		api.toast({
+			    		    msg: ret.message
+			    		});
+			    		$('.tr_'+Violationid).remove();
+			    	}else{
+			    		api.toast({
+			    		    msg: ret.message
+			    		});
+			    
+			    	}
+			    
+			    })
 		}
 	</script>
 
