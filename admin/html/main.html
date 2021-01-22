@@ -167,6 +167,7 @@
 		<div tapmode onclick="addDressing()" class="addDressing">添加穿搭数据</div>
 		<div tapmode onclick="openuser()" class="users" style="color: blue;" >所有用户</div>
 		<div tapmode onclick="openware()"  class="users" style="color: orange;" >所有商品</div>
+		<div tapmode onclick="openaddlike()"  class="users" style="color: red;" >刷赞</div>
 		<div tapmode onclick="select_all()" class="select">所有订单</div>
 		<div tapmode onclick="select(1)" class="select green">已支付订单</div>
 		<div tapmode onclick="select(0)" class="select red">未支付订单</div>
@@ -359,6 +360,15 @@
 		    }
 		});
 
+	}
+	function openaddlike(){
+		api.openWin({
+		    name: 'addlike',
+		    url: './addlike.html',
+		    pageParam: {
+		        name: 'test'
+		    }
+		});
 	}
 	function loginout(){
 		 api.clearCache(function(){

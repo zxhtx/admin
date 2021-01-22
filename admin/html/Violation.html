@@ -105,6 +105,7 @@
     apiready = function() {
 
         var header = $api.byId('header');
+        $api.fixStatusBar(header);
         var nav = $api.byId('nav');
         // 计算header和nav元素的高度
         headerH = $api.offset(header).h;
