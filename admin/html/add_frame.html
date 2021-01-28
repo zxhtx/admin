@@ -216,7 +216,7 @@
 		}
 		if (addInfo.wareTypeId=='56c80da883af652643474b6b' || addInfo.wareTypeId=='56c80db78d04c83d3d1dedea'  ) {
 			var size=$api.byId('size').value;
-			var arrsize=size.split(" ");
+			var arrsize=size.trim().split(" ");
 			var start=arrsize[0];
 			var end=arrsize[1];
 			var addarrsizelist=[];
@@ -228,7 +228,7 @@
 
 		}else {
 			var size=$api.byId('size').value;
-			var arrsize=size.split(" ");
+			var arrsize=size.trim().split(" ");
 
 			
 			if(/^\d+$/.test(arrsize[0]) && /^\d+$/.test(arrsize[1]) ){
@@ -298,8 +298,11 @@
 		}
 		
 		var color=$api.byId('color').value;
-		var arrcolor=color.split(" ");
-		 addInfo.color=arrcolor.toString()
+		var arrcolor=color.trim().split(" ");
+		 addInfo.color=arrcolor.toString();
+		 // alert(addInfo.color);
+		 // alert(addInfo.size);
+		 // return;
 		 save();
 	}
 
