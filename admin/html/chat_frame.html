@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html >
+
+	<head>
+		<meta charset="UTF-8" />
+		 <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>聊天界面</title>
+		<link rel="stylesheet" type="text/css" href="../css/chat.css" />
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<script type="text/javascript" src="../script/api.js"></script>
+		<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+	
+		<style type="text/css">
+			html{
+				height: 100%;
+				width: 100%;
+			}
+			.message{
+				font-size: 15px;
+			}
+		</style>
+		
+	</head>
+
+	<body>
+		<header class="header">
+			<a class="back"  onclick="rechat_lists()"></a>
+			<div class="userinfo">
+				<span class="tit">...</span>
+				<span class="line"></span>
+			</div>
+			<div class="sendemail" onclick="sendemail()">
+				<div class="sendimg"></div>
+			</div>
+			<!-- <div class="right" onclick="getallrecore()">所有记录</div> -->
+		</header>
+		<div class="chatbox">
+		<div class="message">
+
+			<!-- <div class="send">
+				<div class="time">05/22 06:30</div>
+				<div class="msg">
+					<img src="images/touxiang.png" alt="" />
+					<p><i class="msg_input"></i>你好在不在呀，妹子！</p>
+				</div>
+			</div>
+			<div class="show">
+				<div class="time">05/22 06:30</div>
+				<div class="msg">
+					<img src="images/touxiangm.png" alt="" />
+					<p><i clas="msg_input"></i>你好你好你好</p>
+				</div>
+			</div> -->
+		</div>
+		</div>
+		
+	<script type="text/javascript">
+		  var fromid;
+			var toid;
+			var from_head='';
+			var to_head='';
+			var online=0;
+			var is_contact=0;
+			var imgurl='http://img.chaodashe.com/';
+		apiready=function(){
+			fromid=api.pageParam.fromid;
+			toid=api.pageParam.toid;
+			record_load();
+			// woorket();
+
+		}
+		
+			
+		
+		
+
+
+			function record_load(){
+				api.ajax({
+				    url: 'http://api.chaodashe.com/index.php/admingetrecord',
+				    method: 'post',
+				    data: {
+				        values: { 
+				            'fromid':fromid,
+				            'toid':toid 
+				        },
+				      
+				    }
+				}, function(e, err) {
+				
+					// 没有聊天记录时返回对象
+					// alert($api.jsonToStr( e))
+					if(!Array.isArray(e)){
+						
+						from_head=imgurl+e.from_head;
+						to_head=imgurl+e.to_head;
+						$('.tit').html(e.to_name);
+						dl.close();
+						return;
+					}
+
+					// 有聊天记录时返回数组
+					is_contact=1;
+					from_head=imgurl+e[0].from_head;
+					to_head=imgurl+e[0].to_head;
+					$('.tit').html(e[0].to_name);
+				  $.each(e,function(index,e){
+					if (fromid==e.fromid){
+						if (e.type==2) {
+							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+from_head+')" ></div><p><i clas="msg_input"></i><img onload="loadImage()" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+						}else{
+							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.from_head+')" ></div><p><i clas="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+						}
+					}else{
+						if (e.type==2){
+							$('.message').append('<div class="send" ><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+to_head+')"></div><p><i class="msg_input"></i><img onload="loadImage()" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+						}else{
+							$('.message').append('<div class="send"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.to_head+')"></div><p><i class="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+						}
+
+					}
+					})
+				 	
+				
+				   for_bottom();
+				})
+				
+			}
+			
+
+  function timestampFormat( timestamp ) {
+	  function zeroize( num ) {
+	      return (String(num).length == 1 ? '0' : '') + num;
+	  }
+
+	  var curTimestamp = parseInt(new Date().getTime() / 1000); //当前时间戳
+	  var timestampDiff = curTimestamp - timestamp; // 参数时间戳与当前时间戳相差秒数
+
+	  var curDate = new Date( curTimestamp * 1000 ); // 当前时间日期对象
+	  var tmDate = new Date( timestamp * 1000 );  // 参数时间戳转换成的日期对象
+
+	  var Y = tmDate.getFullYear(), m = tmDate.getMonth() + 1, d = tmDate.getDate();
+	  var H = tmDate.getHours(), i = tmDate.getMinutes(), s = tmDate.getSeconds();
+
+	  if ( timestampDiff < 60 ) { // 一分钟以内
+	      return "刚刚";
+	  } else if( timestampDiff < 3600 ) { // 一小时前之内
+	      return Math.floor( timestampDiff / 60 ) + "分钟前";
+	  } else if ( curDate.getFullYear() == Y && curDate.getMonth()+1 == m && curDate.getDate() == d ) {
+	      return '今天' + zeroize(H) + ':' + zeroize(i);
+	  } else {
+	      var newDate = new Date( (curTimestamp - 86400) * 1000 ); // 参数中的时间戳加一天转换成的日期对象
+	      if ( newDate.getFullYear() == Y && newDate.getMonth()+1 == m && newDate.getDate() == d ) {
+	          return '昨天' + zeroize(H) + ':' + zeroize(i);
+	      } else if ( curDate.getFullYear() == Y ) {
+	          return  zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+	      } else {
+	          return  Y + '年' + zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+	      }
+	  }
+}
+
+
+function for_bottom(){
+		var message_height = ($('.message').height())*18;
+		$('.message,.chatbox').animate({scrollTop:message_height},300);
+	}
+	function loadImage(){
+		// for_bottom();
+		
+	}
+	$(".text").click(function(){
+		for_bottom();
+	$('.text').on("keyup paste",function(){
+    if($('.text').text().length>=1){
+        $('.sendbtn').css({'color':'#fff','background':'black'});
+    }else{
+        $('.sendbtn').css({'color':'#fff','background':'#606060'});
+    }
+  })	
+	})
+
+	</script>
+	</body>
+
+</html>

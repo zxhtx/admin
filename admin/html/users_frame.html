@@ -42,7 +42,7 @@
 	</table>
 </body>
 <script type="text/template" id="template">
-<tr> <th>账号</th><th>用户名</th><th>性别</th><th>邮箱</th><th>注册时间</th><th>潮贝</th><th>余额</th></tr>
+<tr> <th>账号</th><th>用户名</th><th>性别</th><th>邮箱</th><th>聊天记录</th><th>注册时间</th><th>最后上线</th><th>潮贝</th><th>余额</th></tr>
 	{{~it:value:index}}
 
 	<tr>
@@ -55,7 +55,14 @@
 			<td >女</td>
 		{{ } }}
 		<td>{{=value.email}}</td>
+		<td tapmode onclick="openchat('{{=value.id}}')">查看</td>
 		<td>{{!timestampFormat('{{=value.addtime}}')}}</td>
+		{{ if(value.lastonlinetime=='0'){ }}
+		<td>暂无</td>
+		{{ }else{ }}
+		<td>{{!timestampFormat('{{=value.lastonlinetime}}')}}</td>
+		{{ } }}
+		
 		<td>{{=value.cb}}</td>
 		<td>{{=value.balance}}</td>
 	</tr>
@@ -168,6 +175,16 @@ function initEventListenter(){
 		}
 	}, function(ret, err){        
 		userlist(true);
+	});
+}
+
+function openchat(uid){
+	api.openWin({
+	    name: 'chatlist',
+	    url: './chatlist.html',
+	    pageParam: {
+	        fromid: uid
+	    }
 	});
 }
 // function no(_id){

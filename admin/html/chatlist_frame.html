@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<meta charset="UTF-8" />
+		 <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>消息列表</title>
+		<meta name="referrer" content="no-referrer" />
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<script type="text/javascript" src="../script/api.js"></script>
+		<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/chat_lists.css">
+	</head>
+<body>
+ <div class="lists">
+	<!-- <div class="list">
+		<div class="head_img" style="background-image: url('images/touxiang.png');"></div>
+		<p class="noreadcount">5</p>
+		<p class="name">风来了</p>
+		<p class="text">风来了风来了风来了风来了风来了风来了风来了风来了风来了风来了风来了风来了</p>
+		<p class="time">2019/10/10 10:1:2</p>
+
+	</div> -->
+
+ </div>
+
+ <script type="text/javascript">
+	 var off_on=false;
+	 var skip=0;
+	 var limit=20;
+	 var userInfo;
+	var fromid;
+	var imgurl='http://img.chaodashe.com/';
+	 apiready = function(){
+	 	fromid=api.pageParam.fromid;
+	   		even();
+	      resetlists();	   
+		   reshtml()
+		
+	 }
+	     
+	function reshtml(){
+       
+        api.setCustomRefreshHeaderInfo({
+            bgColor: '#fff',
+            images: [
+                 'widget://image/icon/chaodashe.png',
+               
+            ],
+            tips: {
+                pull: '下拉刷新',
+                threshold: '松开立即刷新',
+                load: '正在刷新'
+            },
+            animationRate:0.2
+        }, function() {
+            //下拉刷新被触发，自动进入加载状态，使用 api.refreshHeaderLoadDone() 手动结束加载中状态
+            //下拉刷新被触发，使用 api.refreshHeaderLoadDone() 结束加载中状态  
+           
+           resetlists();
+           u_allNoreadcount();
+        });
+      }
+   
+
+
+ 	
+
+		//上拉加载
+				 window.addEventListener("scroll", function (){
+				      //当时滚动条离底部0px时开始加载下一页的内容
+				      if (($(window).height() + $(window).scrollTop() + 200) >= $(document).height()) {
+							if(off_on){
+								off_on=false;
+								resetlists(true);
+								$('.lists').append('<div id="xuanzhun" class="xz" style="width: 30px; height: 30px; margin:0 auto; margin-top:12px; ">')
+							}
+
+
+				      }
+				  });
+
+
+
+
+
+ 	function resetlists(_loadMore){
+		if(_loadMore){
+			skip+=limit;
+		}else{
+			skip=0;
+			// dialog('正在查找聊天好友');
+		}
+
+		api.ajax({
+		    url: 'http://api.chaodashe.com/index.php/adminchatlist',
+		    method: 'post',
+		    data: {
+		        values: { 
+		            'fromid':fromid,
+		            'skip':skip,
+		            'limit':limit
+		        },
+		    }
+		}, function(e, err) {
+			// alert($api.jsonToStr(ret))
+ 			if(e.code==200){
+				var reshtml='';
+				$.each(e.data,function(index,data){
+					if (data.noreadcount==0){
+						if(data.last_record.type==1){
+							reshtml+='<div onclick=redi("'+data.toid+'") class="list"><div class="head_img" style="background-image: url('+imgurl+data.head_img+');"></div><p class="name">'+data.username+'</p><p class="text">'+data.last_record.content+'</p><p class="time">'+timestampFormat(data.last_record.time)+'</p></div>'
+						}else{
+							reshtml+='<div onclick=redi("'+data.toid+'") class="list"><div class="head_img" style="background-image: url('+imgurl+data.head_img+');"></div><p class="name">'+data.username+'</p><p class="text">[新图片]</p><p class="time">'+timestampFormat(data.last_record.time)+'</p></div>'
+						}
+
+					}else{
+						if(data.last_record.type==1){
+							reshtml+='<div onclick=redi("'+data.toid+'") class="list"><div class="head_img" style="background-image: url('+imgurl+data.head_img+');"></div><p class="noreadcount">'+data.noreadcount+'</p><p class="name">'+data.username+'</p><p class="text">'+data.last_record.content+'</p><p class="time">'+timestampFormat(data.last_record.time)+'</p></div>'
+						}else{
+							reshtml+='<div onclick=redi("'+data.toid+'") class="list"><div class="head_img" style="background-image: url('+imgurl+data.head_img+');"></div><p class="noreadcount">'+data.noreadcount+'</p><p class="name">'+data.username+'</p><p class="text">[新图片]</p><p class="time">'+timestampFormat(data.last_record.time)+'</p></div>'
+						}
+
+					}
+
+			
+				})
+				if(_loadMore){
+					$('.lists').append(reshtml);
+				}else{
+					$('.lists').html(reshtml);
+				}
+				
+				off_on=true;
+				// dl.close();
+				$('.xz').remove();
+			}else{
+				// dl.close();
+				$('.xz').remove();
+				// $('body').append('<p class="nodata" style=" text-align: center;color: #ddd;height: 24px;line-height: 24px;">-暂无聊天好友-</p>');
+			}
+
+			api.refreshHeaderLoadDone()
+ 		})
+ 		
+ 	}
+
+
+
+
+    function redi(toid){
+    	// alert(toid)
+    	api.openWin({
+    	    name: 'chat',
+    	    url: './chat.html',
+    	    pageParam: {
+    	        fromid:fromid,
+    	        toid:toid
+    	    },
+    	   
+    	});
+    }
+    function even(){
+    	api.addEventListener({
+    	    name: 'reschatlist'
+    	}, function(ret, err) {
+    	    if (ret) {
+    	    resetlists();
+    	    $('.nodata').remove();
+    	    // alert(1)
+    		api.sendEvent({
+    		    name: 'resallNoreadcount',
+    		});
+    	
+    		
+    	    }
+    	});
+
+    }
+
+  function timestampFormat( timestamp ) {
+  function zeroize( num ) {
+      return (String(num).length == 1 ? '0' : '') + num;
+  }
+
+  var curTimestamp = parseInt(new Date().getTime() / 1000); //当前时间戳
+  var timestampDiff = curTimestamp - timestamp; // 参数时间戳与当前时间戳相差秒数
+
+  var curDate = new Date( curTimestamp * 1000 ); // 当前时间日期对象
+  var tmDate = new Date( timestamp * 1000 );  // 参数时间戳转换成的日期对象
+
+  var Y = tmDate.getFullYear(), m = tmDate.getMonth() + 1, d = tmDate.getDate();
+  var H = tmDate.getHours(), i = tmDate.getMinutes(), s = tmDate.getSeconds();
+
+  if ( timestampDiff < 60 ) { // 一分钟以内
+      return "刚刚";
+  } else if( timestampDiff < 3600 ) { // 一小时前之内
+      return Math.floor( timestampDiff / 60 ) + "分钟前";
+  } else if ( curDate.getFullYear() == Y && curDate.getMonth()+1 == m && curDate.getDate() == d ) {
+      return '今天' + zeroize(H) + ':' + zeroize(i);
+  } else {
+      var newDate = new Date( (curTimestamp - 86400) * 1000 ); // 参数中的时间戳加一天转换成的日期对象
+      if ( newDate.getFullYear() == Y && newDate.getMonth()+1 == m && newDate.getDate() == d ) {
+          return '昨天' + zeroize(H) + ':' + zeroize(i);
+      } else if ( curDate.getFullYear() == Y ) {
+          return  zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+      } else {
+          return  Y + '年' + zeroize(m) + '月' + zeroize(d) + '日 ' + zeroize(H) + ':' + zeroize(i);
+      }
+  }
+}
+
+ </script>
+</body>
+</html>
