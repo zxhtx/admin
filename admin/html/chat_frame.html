@@ -187,7 +187,7 @@ function for_bottom(){
     }
   })	
 	})
-		function  playvoice(url) {
+	function  playvoice(url) {
 				// alert(url)
 		var  audioStreamer = api.require('audioStreamer');
 				audioStreamer.openPlayer({
@@ -200,9 +200,9 @@ function for_bottom(){
 				    }
 				});
 			}
-		function usercenter(uid){
+	function usercenter(uid){
 		api.openWin({
-		    name: 'chatlist_'+new Date().getTime(),
+		    name: 'chatlist'+new Date().getTime(),
 		    url: './chatlist.html',
 		    pageParam: {
 		        fromid: uid
