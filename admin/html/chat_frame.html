@@ -9,6 +9,7 @@
 		<link rel="stylesheet" type="text/css" href="../css/chat.css" />
 		<link rel="stylesheet" type="text/css" href="../css/api.css" />
 		<script type="text/javascript" src="../script/api.js"></script>
+		<script type="text/javascript" src="../script/flexible.js"></script>
 		<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
 	
 		<style type="text/css">
@@ -109,14 +110,20 @@
 					if (fromid==e.fromid){
 						if (e.type==2) {
 							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+from_head+')" ></div><p><i clas="msg_input"></i><img onload="loadImage()" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
-						}else{
+						}else if (e.type==1){
 							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.from_head+')" ></div><p><i clas="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+						}else{
+
+							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.from_head+')" ></div><p onclick=playvoice('+"'"+imgurl+e.content+"'"+')><i clas="msg_input"></i><img class="voicedb" src="../image/shengbo.png" /><span class="duration">'+e.duration+'``</span></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}
 					}else{
 						if (e.type==2){
 							$('.message').append('<div class="send" ><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+to_head+')"></div><p><i class="msg_input"></i><img onload="loadImage()" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
-						}else{
+						}else if(e.type==1){
 							$('.message').append('<div class="send"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.to_head+')"></div><p><i class="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+						}else{
+								$('.message').append('<div class="send"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.to_head+')" ></div><p  onclick=playvoice('+"'"+imgurl+e.content+"'"+')><i clas="msg_input"></i><img class="voicedb" src="../image/shengbo.png" /><span class="duration">'+e.duration+'``</span></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+							
 						}
 
 					}
@@ -180,6 +187,29 @@ function for_bottom(){
     }
   })	
 	})
+		function  playvoice(url) {
+				// alert(url)
+		var  audioStreamer = api.require('audioStreamer');
+				audioStreamer.openPlayer({
+				    path: url,
+				}, function(ret) {
+				    if (!ret.status) {
+				       api.toast({
+				           msg: '播放失败'
+				       });
+				    }
+				});
+			}
+		function usercenter(uid){
+		api.openWin({
+		    name: 'chatlist_'+new Date().getTime(),
+		    url: './chatlist.html',
+		    pageParam: {
+		        fromid: uid
+		    }
+		});
+		// window.location.href='./TAusercenter.html?'+window.btoa(encodeURI('uid='+uid));
+	}
 
 	</script>
 	</body>

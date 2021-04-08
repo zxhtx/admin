@@ -151,7 +151,7 @@
     function redi(toid){
     	// alert(toid)
     	api.openWin({
-    	    name: 'chat',
+    	    name: 'chat_'+new Date().getTime(),
     	    url: './chat.html',
     	    pageParam: {
     	        fromid:fromid,

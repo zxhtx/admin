@@ -54,7 +54,6 @@ body{
 .message{
     background-color: #f1f1f1;
 	padding: 1.2rem 0.3rem 1rem 0.3rem;	
-	font-size: 15px;
 }
 
 
@@ -123,10 +122,13 @@ body{
 	/*width: 0.8rem;*/
 	float: left;
 }
+.isread{
+	font-size: 12px;
+}
 .msg>p{
 	float: left;
-	margin:0  0.4rem;
-	padding: 0.25rem;
+	margin:0  0.2rem;
+	padding: 0.22rem;
 	background: #fff;
 	font-size: 0.3rem;
 	position: relative;
@@ -245,30 +247,8 @@ word-break:break-all;
 	vertical-align: middle;
 	text-align: center;
 }
-.sendemail {
-	opacity: 0;
-	position: fixed;
-	right: 28px;
-	bottom: 88px;
-	width: 66px;
-	height: 66px;
-	box-shadow: 0 0.3em 0.6em rgb(0 0 0 / 60%);
-	border-radius: 50%;
-	z-index: 1;
-	font-size: 14px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
 
-.sendimg {
-	background-image: url('../image/lingdang.png');
-	background-position: center;
-	background-size: cover;
-	width: 32px;
-	height: 32px;
-	/* display: inline-block; */
-}
+
 
 .chatbox{
 
@@ -318,4 +298,10 @@ word-break:break-all;
     color:#999;
     margin-bottom: 0.3rem;
     text-align: center;
+}
+.voicedb{
+	width: 30px;
+	height: 26px;
+	margin-right: 8px;
+
 }

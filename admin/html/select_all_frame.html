@@ -61,7 +61,7 @@
 
 </body>
 <script type="text/template" id="template">
-<tr><th>是否支付</th><th>类型</th><th>商品</th><th>原价</th><th>支付价格</th><th>实际支付</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>单号</th><th>商品图</th><th>删除</th></tr>
+<tr><th>是否支付</th><th>类型</th><th>商品</th><th>原价</th><th>支付价格</th><th>实际支付</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>账号</th><th>单号</th><th>商品图</th><th>删除</th></tr>
 	{{~it:value:index}}
 	
 	<tr class="black">
@@ -170,7 +170,7 @@
       },function(ret, err){
       	if (ret.code==200) {
          // 模板渲染
-        // alert($api.jsonToStr(ret))
+        alert($api.jsonToStr(ret))
 
          updateWareList(ret.data,_LoadMore);
          // alert($api.jsonToStr(ret))
