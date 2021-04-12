@@ -42,7 +42,7 @@
 	</table>
 </body>
 <script type="text/template" id="template">
-<tr> <th>账号</th><th>用户名</th><th>性别</th><th>邮箱</th><th>聊天记录</th><th>注册时间</th><th>最后上线</th><th>余额</th></tr>
+<tr> <th>账号</th><th>用户名</th><th>性别</th><th>邮箱</th><th>聊天记录</th><th>注册时间</th><th>最后上线</th><th>成交额</th><th>结款</th><th>提现</th><th>余额</th></tr>
 	{{~it:value:index}}
 
 	<tr>
@@ -63,7 +63,9 @@
 		<td>{{!timestampFormat('{{=value.lastonlinetime}}')}}</td>
 		{{ } }}
 		
-	
+		<td>{{=value.Turnover}}</td>
+		<td>{{=value.Settlement}}</td>
+		<td>{{=value.tx}}</td>
 		<td>{{=value.balance}}</td>
 	</tr>
 	{{~}}
