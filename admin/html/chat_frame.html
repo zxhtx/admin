@@ -109,7 +109,7 @@
 				  $.each(e,function(index,e){
 					if (fromid==e.fromid){
 						if (e.type==2) {
-							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+from_head+')" ></div><p><i clas="msg_input"></i><img onload="loadImage()" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+from_head+')" ></div><p><i clas="msg_input"></i><img onclick="copyurl('+"'"+imgurl+e.content+"'"+')" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}else if (e.type==1){
 							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.from_head+')" ></div><p><i clas="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}else{
@@ -118,7 +118,7 @@
 						}
 					}else{
 						if (e.type==2){
-							$('.message').append('<div class="send" ><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+to_head+')"></div><p><i class="msg_input"></i><img onload="loadImage()" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+							$('.message').append('<div class="send" ><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+to_head+')"></div><p><i class="msg_input"></i><img onclick="copyurl('+"'"+imgurl+e.content+"'"+')" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}else if(e.type==1){
 							$('.message').append('<div class="send"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.to_head+')"></div><p><i class="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}else{
@@ -211,6 +211,21 @@ function for_bottom(){
 		// window.location.href='./TAusercenter.html?'+window.btoa(encodeURI('uid='+uid));
 	}
 
+	function copyurl(url){
+		var clipBoard = api.require('clipBoard');
+		clipBoard.set({
+			value: url
+		}, function(ret, err) {
+			if (ret) {
+				api.toast({
+					msg: '复制成功',
+					duration: 2000,
+					location: 'bottom'
+				});
+
+			}
+		});
+	}
 	</script>
 	</body>
 
