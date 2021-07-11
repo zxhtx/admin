@@ -61,7 +61,7 @@
 
 </body>
 <script type="text/template" id="template">
-<tr><th>是否支付</th><th>类型</th><th>商品</th><th>原价</th><th>支付价格</th><th>实际支付</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>单号</th><th>商品图</th><th>删除</th></tr>
+<tr><th>是否支付</th><th>类型</th><th>商品</th><th>原价</th><th>支付价格</th><th>实际支付</th><th>颜色</th><th>码子</th><th>收货地址</th><th>收货人</th><th>电话</th><th>用户</th><th>单号</th><th>商品图</th><th>删除</th> <th>修改状态</th> </tr>
 	{{~it:value:index}}
 	
 		<tr class="black">
@@ -123,6 +123,13 @@
 		
 
 		<td class="red" tapmode onclick="no('{{=value.id}}')">删除</td>
+		{{if(value.dindantypeid=='5c2a3991af3114d73d9ddfc2'){}}
+
+			<td tapmode onclick="updatedindantype('{{=value.id}}')">修改成支付</td>
+		{{ }else{ }}
+
+			<td class="green">已支付</td>
+		{{ } }}
 	
 	</tr>
 
@@ -456,6 +463,28 @@ function fuzhi(_data){
 
 		}
 	});
+}
+
+function updatedindantype(id){
+	api.ajax({
+		url:'http://api.chaodashe.com/index.php/updatedindantype',
+		method: 'post',
+		data: {
+			values:{
+				"shoppingid":id,
+				"userid":userInfo.id
+			}
+		},
+		headers:{'Token':$api.getStorage('token')},
+	},function(ret, err){
+
+		if (ret.code=='200'){
+			toast(ret.message);
+		}else{
+			toast(ret.message)
+		}
+
+ });
 }
 
 </script>
