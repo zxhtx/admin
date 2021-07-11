@@ -479,9 +479,13 @@ function updatedindantype(id){
 	},function(ret, err){
 
 		if (ret.code=='200'){
-			toast(ret.message);
+			 api.toast({
+			     msg: ret.message
+			 });
 		}else{
-			toast(ret.message)
+			api.toast({
+			    msg: ret.message
+			});
 		}
 
  });
