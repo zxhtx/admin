@@ -111,7 +111,7 @@
 						if (e.type==2) {
 							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+from_head+')" ></div><p><i clas="msg_input"></i><img onclick="copyurl('+"'"+imgurl+e.content+"'"+')" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}else if (e.type==1){
-							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.from_head+')" ></div><p onclick="copyurl('+e.content+')"><i clas="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.from_head+')" ></div><p onclick="copytext('+"'"+e.content+"'"+')"><i clas="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}else{
 
 							$('.message').append('<div class="show"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.from_head+')" ></div><p onclick=playvoice('+"'"+imgurl+e.content+"'"+')><i clas="msg_input"></i><img class="voicedb" src="../image/shengbo.png" /><span class="duration">'+e.duration+'``</span></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
@@ -120,7 +120,7 @@
 						if (e.type==2){
 							$('.message').append('<div class="send" ><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+to_head+')"></div><p><i class="msg_input"></i><img onclick="copyurl('+"'"+imgurl+e.content+"'"+')" max-width="188em" max-height="188em" src="'+imgurl+e.content+'"/></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}else if(e.type==1){
-							$('.message').append('<div class="send"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.to_head+')"></div><p onclick="copyurl('+e.content+')"><i class="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
+							$('.message').append('<div class="send"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.to_head+')"></div><p onclick="copytext('+"'"+e.content+"'"+')"><i class="msg_input"></i>'+e.content+'</p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 						}else{
 								$('.message').append('<div class="send"><div class="msg"><div onclick="usercenter('+"'"+ e.fromid +"'"+')" class="head_img" style="background-image:url('+imgurl+e.to_head+')" ></div><p  onclick=playvoice('+"'"+imgurl+e.content+"'"+')><i clas="msg_input"></i><img class="voicedb" src="../image/shengbo.png" /><span class="duration">'+e.duration+'``</span></p><span class="time">'+timestampFormat(e.time)+'</span></div></div>');
 							
